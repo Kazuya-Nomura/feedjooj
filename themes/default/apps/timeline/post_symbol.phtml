@@ -1,3 +1,21 @@
+<script>
+	analyze = function(e, id) {
+		if(e.target === HTMLImageElement) return;
+		// Check if the click is not on an anchor tag (or any interactive element)
+		if (!e.target.closest('a') && !e.target.closest('.inner-content') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
+			alert(<?php echo $config['url']; ?>)
+			// window.location.href = '/thread/' + id; // Set your root link here
+		}
+	}
+	analyze_quote = function(e, id) {
+		if(e.target === HTMLImageElement) return;
+		// Check if the click is not on an anchor tag (or any interactive element)
+		if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
+			window.location.href = '/thread/' + id; // Set your root link here
+		}
+	}
+</script>
+
 <?php if ($cl['li']['advertising']): ?>
 	<?php echo cl_template('timeline/ad'); ?>
 <?php else: ?>
@@ -763,19 +781,3 @@
 		<?php endif;?>
 	<?php endif; ?>
 <?php endif; ?>
-<script>
-	analyze = function(e, id) {
-		if(e.target === HTMLImageElement) return;
-		// Check if the click is not on an anchor tag (or any interactive element)
-		if (!e.target.closest('a') && !e.target.closest('.inner-content') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
-			window.location.href = '/thread/' + id; // Set your root link here
-		}
-	}
-	analyze_quote = function(e, id) {
-		if(e.target === HTMLImageElement) return;
-		// Check if the click is not on an anchor tag (or any interactive element)
-		if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
-			window.location.href = '/thread/' + id; // Set your root link here
-		}
-	}
-</script>

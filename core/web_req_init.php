@@ -32,10 +32,9 @@ $cl["db_errors"] = array();
 $sql_db_host     = (isset($sql_db_host) ? $sql_db_host : "localhost");
 $sql_db_user     = (isset($sql_db_user) ? $sql_db_user : "root");
 $sql_db_pass     = (isset($sql_db_pass) ? $sql_db_pass : "");
-$sql_db_name     = (isset($sql_db_name) ? $sql_db_name : "joojtalk-db");
+$sql_db_name     = (isset($sql_db_name) ? $sql_db_name : "cointwee_talk");
 $site_url        = (isset($site_url)    ? $site_url    : "");
 $mysqli          = new mysqli($sql_db_host, $sql_db_user, $sql_db_pass, $sql_db_name);
-
 
 if (mysqli_connect_errno()) {
     array_push($cl["db_errors"], mysqli_connect_error());
@@ -211,10 +210,8 @@ if (not_empty($_GET['language'])) {
 
 if (not_empty($cl["config"]["google_ad_horiz"])) {
     $cl["gads_horiz"] = htmlspecialchars_decode($cl["config"]["google_ad_horiz"]);
-    // $cl["gads_horiz"] = "horizontal ads";
 }
 
 if (not_empty($cl["config"]["google_ad_vert"])) {
     $cl["gads_vert"] = htmlspecialchars_decode($cl["config"]["google_ad_vert"]);
-    // $cl["gads_vert"] = "vertical ads";
 }

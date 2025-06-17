@@ -1,5 +1,21 @@
+<script>
+	analyze = function(e, id) {
+		if(e.target === HTMLImageElement) return;
+		// Check if the click is not on an anchor tag (or any interactive element)
+		if (!e.target.closest('a') && !e.target.closest('.inner-content') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
+			alert(<?php echo $config["url"]; ?>)
+			window.location.href = '/thread/' + id; // Set your root link here
+		}
+	}
+	analyze_quote = function(e, id) {
+		if(e.target === HTMLImageElement) return;
+		// Check if the click is not on an anchor tag (or any interactive element)
+		if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
+			window.location.href = '/thread/' + id; // Set your root link here
+		}
+	}
+</script>
 
-	
 <div class="post-list-item" data-list-item="<?php echo ($cl['li']['id']); ?>" onclick="analyze(event, <?php echo ($cl['li']['id']); ?>)" style="cursor:pointer">
 	<?php if (not_empty($cl['li']['is_repost'])): ?>
 		<div class="post-list-item-header">
@@ -460,19 +476,3 @@
 		</div>
 	</div>
 </div>
-<script>
-	analyze = function(e, id) {
-		if(e.target === HTMLImageElement) return;
-		// Check if the click is not on an anchor tag (or any interactive element)
-		if (!e.target.closest('a') && !e.target.closest('.inner-content') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
-			window.location.href = '/thread/' + id; // Set your root link here
-		}
-	}
-	analyze_quote = function(e, id) {
-		if(e.target === HTMLImageElement) return;
-		// Check if the click is not on an anchor tag (or any interactive element)
-		if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
-			window.location.href = '/thread/' + id; // Set your root link here
-		}
-	}
-</script>

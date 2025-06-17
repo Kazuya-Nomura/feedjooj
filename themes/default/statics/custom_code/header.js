@@ -1,5 +1,1 @@
-/*
-Enter your custom JS code here.
-
-Please note that the code entered here will be added to the <head> tag.
-*/
+<script type="text/javascript"> var infolinks_pid = 3432565; var infolinks_wsid = 0; </script> <script type="text/javascript" src="//resources.infolinks.com/js/infolinks_main.js"></script>
