@@ -1,4 +1,51 @@
 <div class="timeline-container" data-app="symbol">
+	<style>
+		
+		.with-tooltip {
+			position: relative;
+			cursor: help;
+		}
+
+		.with-tooltip::after {
+			content: attr(data-content);
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: rgba(150, 150, 150, 0.8);
+			color: white;
+			padding: 12px 12px;
+			border-radius: 4px;
+			font-size: 14px;
+			white-space: nowrap;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s, visibility 0.3s;
+			z-index: 1000;
+			pointer-events: none;
+		}
+
+		.with-tooltip::before {
+			content: '';
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%) translateY(100%);
+			border: 5px solid transparent;
+			border-top-color: rgba(0, 0, 0, 0.8);
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s, visibility 0.3s;
+			z-index: 1000;
+		}
+
+		.with-tooltip:hover::after,
+		.with-tooltip:hover::before {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		</style>
 	<?php
 
 		use Aws\DynamoDb\NumberValue;
@@ -39,6 +86,104 @@
 			$cl['coin_one'] = [];
 		}
 	?>
+
+	<script language="javascript"> 
+		select = (pane) => {
+		console.log(pane);
+		var selectionPane = document.getElementsByClassName("profile-activity-navbar");
+		if (pane === 'posts') {
+			if (state === 'posts') return;
+			$("#posts").addClass("show active");
+			if ($("#trending").removeClass("show active"));
+			// if ($("#news").removeClass("show active"));
+			if ($("#about").removeClass("show active"));
+			state = "posts";
+			for (var i = 0; i < 4; i++) {
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[0].classList.add("active");
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[0].classList.add("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
+			}
+		}
+		else if (pane === 'trending') {
+			if (state === 'trending') return;
+			$("#trending").addClass("show active");
+			if ($("#posts").removeClass("show active"));
+			// if ($("#news").removeClass("show active"));
+			if ($("#about").removeClass("show active"));
+			state = 'trending';
+			for (var i = 0; i < 4; i++) {
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[1].classList.add("active");
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[1].classList.add("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
+			}
+			if (window.scrollY > 400) {
+				about.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+				window.scrollTo(0, 400);
+			}
+		}
+		else if (pane === 'about') {
+			if (state === 'about') return;
+			$("#about").addClass("show active");
+			if ($("#posts").removeClass("show active"));
+			if ($("#trending").removeClass("show active"));
+			// if ($("#news").removeClass("show active"));
+			state = 'about';
+			for (var i = 0; i < 4; i++) {
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[2].classList.add("active");
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[2].classList.add("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
+				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
+			}
+			if (window.scrollY > 400) {
+				trending.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+			}
+		}
+		// else if (pane === 'news') {
+		// 	if (state === 'news') return;
+		// 	$("#news").addClass("show active");
+		// 	if ($("#posts").removeClass("show active"));
+		// 	if ($("#trending").removeClass("show active"));
+		// 	if ($("#about").removeClass("show active"));
+		// 	state = 'news';
+		// 	for (var i = 0; i < 4; i++) {
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.add("active");
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.add("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
+		// 	}
+		// 	if (window.scrollY > 400) {
+		// 		news.scrollIntoView({
+		// 			behavior: 'smooth',
+		// 			block: 'start'
+		// 		});
+		// 	}
+		// }
+	}
+	</script>
 
 	<div class="h-laptop">
 		<div class="mobile-bottom-navbar2" data-app="mobile-navbar">
@@ -129,7 +274,7 @@
 		<div class="timeline-prof-info-area">
 			<div class="profile-main-info-holder">
 				<div style="display: flex; align-items: center;">
-					<div class="profile-name-holder" style="display: inline-flex; align-items: center; margin-bottom:0px; width:60%; vertical-align: middle;">
+					<div class="profile-name-holder with-tooltip" data-content="The coin prices are approximate" style="display: inline-flex; align-items: center; margin-bottom:0px; width:60%; vertical-align: middle;">
 						<div class="profile-avatar" style="max-width: 70px; max-height:70px;">
 							<a href="<?php echo ($cl['prof_user']['avatar']); ?>" class="image-wrapper fbox-media">
 								<img src="<?php echo ($cl['prof_user']['avatar']); ?>" alt="Avatar" style="border-radius:50%;">
@@ -321,7 +466,7 @@
 					</div>
 				</div>
 				<div style="display: flex; text-align:left; align-items:center; padding: 9px 0px">
-					<div style="width: 85%; display:flex;">
+					<div style="width: 85%; display:flex;"  class="with-tooltip" data-content="<?php echo cl_translate("The coin prices are approximate"); ?>">
 						<?php if (isset($cl['coin_one']) && !empty($cl['coin_one'])) : ?>
 							<div style="padding-left: 14px; font-size:xx-large; color:var(--smc-main-text-color); font-weight:bold" id='price'>
 								<?php echo "$" . $cl['coin_one']['price']; ?>
@@ -584,102 +729,6 @@
 		itemtsToShow: 5,
 	});
 	var state = "posts";
-
-	select = (pane) => {
-		console.log(pane);
-		var selectionPane = document.getElementsByClassName("profile-activity-navbar");
-		if (pane === 'posts') {
-			if (state === 'posts') return;
-			$("#posts").addClass("show active");
-			if ($("#trending").removeClass("show active"));
-			// if ($("#news").removeClass("show active"));
-			if ($("#about").removeClass("show active"));
-			state = "posts";
-			for (var i = 0; i < 4; i++) {
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.add("active");
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.add("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
-			}
-		}
-		else if (pane === 'trending') {
-			if (state === 'trending') return;
-			$("#trending").addClass("show active");
-			if ($("#posts").removeClass("show active"));
-			// if ($("#news").removeClass("show active"));
-			if ($("#about").removeClass("show active"));
-			state = 'trending';
-			for (var i = 0; i < 4; i++) {
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.add("active");
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.add("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
-			}
-			if (window.scrollY > 400) {
-				about.scrollIntoView({
-					behavior: 'smooth',
-					block: 'start'
-				});
-				window.scrollTo(0, 400);
-			}
-		}
-		else if (pane === 'about') {
-			if (state === 'about') return;
-			$("#about").addClass("show active");
-			if ($("#posts").removeClass("show active"));
-			if ($("#trending").removeClass("show active"));
-			// if ($("#news").removeClass("show active"));
-			state = 'about';
-			for (var i = 0; i < 4; i++) {
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.add("active");
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
-				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.add("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
-				selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
-			}
-			if (window.scrollY > 400) {
-				trending.scrollIntoView({
-					behavior: 'smooth',
-					block: 'start'
-				});
-			}
-		}
-		// else if (pane === 'news') {
-		// 	if (state === 'news') return;
-		// 	$("#news").addClass("show active");
-		// 	if ($("#posts").removeClass("show active"));
-		// 	if ($("#trending").removeClass("show active"));
-		// 	if ($("#about").removeClass("show active"));
-		// 	state = 'news';
-		// 	for (var i = 0; i < 4; i++) {
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.add("active");
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.add("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
-		// 	}
-		// 	if (window.scrollY > 400) {
-		// 		news.scrollIntoView({
-		// 			behavior: 'smooth',
-		// 			block: 'start'
-		// 		});
-		// 	}
-		// }
-	}
 
 	new Vue({
 		el: "#vue-main-search-app",
