@@ -979,12 +979,26 @@ function cl_get_user_by_name($uname = null) {
         return false;
     }
 
-    $db    = $db->where('username',$uname);
+// Use exact match for symbol name lookup
+    $db    = $db->where('username', $uname);
     $udata = $db->getOne(T_USERS, 'id');
 
     if (cl_queryset($udata)) {
         $user_id = intval($udata['id']);
         $udata   = cl_user_data($user_id);
+    }
+    else {
+        // // If not found, try case-insensitive search for short symbols
+        // if (strlen($sname) <= 3) {
+        //     $db = $db->where('LOWER(username)', strtolower($sname));
+        //     $sdata = $db->getOne(T_SYMBOLS, 'id');
+            
+        //     if (cl_queryset($sdata)) {
+        //         $symbol_id = intval($sdata['id']);
+        //         $sdata = cl_symbol_data($symbol_id);
+        //     }
+        // }
+        $udata = false;
     }
 
     return $udata;
@@ -996,12 +1010,19 @@ function cl_get_symbol_by_name($sname = null) {
         return false;
     }
 
-    $db    = $db->where('username',$sname);
+    // First try exact match (case-sensitive)
+    $db = $db->where('username', $sname);
     $sdata = $db->getOne(T_SYMBOLS, 'id');
+
+    // If not found and it's a short symbol (2-3 chars), try case-insensitive match
+    if (!cl_queryset($sdata) && strlen($sname) <= 3) {
+        $db = $db->where('LOWER(username)', strtolower($sname));
+        $sdata = $db->getOne(T_SYMBOLS, 'id');
+    }
 
     if (cl_queryset($sdata)) {
         $symbol_id = intval($sdata['id']);
-        $sdata   = cl_symbol_data($symbol_id);
+        $sdata = cl_symbol_data($symbol_id);
     }
 
     return $sdata;
@@ -1014,8 +1035,16 @@ function cl_get_symbol_id_by_name($sname = null) {
         return false;
     }
 
-    $db      = $db->where('username', $sname);
-    $sdata   = $db->getOne(T_SYMBOLS, 'id');
+    // $db      = $db->where('username', $sname);
+    // $sdata   = $db->getOne(T_SYMBOLS, 'id');
+    $db = $db->where('username', $sname);
+    $sdata = $db->getOne(T_SYMBOLS, 'id');
+    
+    if (!cl_queryset($sdata) && strlen($sname) <= 3) {
+        // Try case-insensitive search for short symbols
+        $db = $db->where('LOWER(username)', strtolower($sname));
+        $sdata = $db->getOne(T_SYMBOLS, 'id');
+    }
     $symbol_id = 0;
 
     if (cl_queryset($sdata)) {
