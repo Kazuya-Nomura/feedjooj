@@ -55,6 +55,7 @@ if (not_empty($cl["is_logged"])) {
 	$cl['prof_user']['follow_requested'] = false;
 	$cl['prof_user']['common_follows']   = cl_get_common_follows($cl['prof_user']['id']);
 	$cl['prof_user']['is_myfollower']    = cl_is_following($cl['prof_user']['id'], $me["id"]);
+	$cl['prof_user']['follow_requests'] = cl_get_follow_requests_total();
 
 	if (empty($cl['prof_user']['is_following'])) {
 		$cl['prof_user']['follow_requested'] = cl_follow_requested($me['id'], $cl['prof_user']['id']);

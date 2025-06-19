@@ -94,11 +94,11 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(\w{3,25})(\/|)$ index.php?app=profile&uname=$1 [QSA]
 RewriteRule ^(\w{3,25})/(following|followers|watching|follow_requests)(\/|)$ index.php?app=connections&uname=$1&tab=$2 [QSA]
 RewriteRule ^(\w{3,25})/(posts|media|likes)(\/|)$ index.php?app=profile&uname=$1&tab=$2 [QSA]
-RewriteRule ^symbol/(\w{3,25})(\/|)$ index.php?app=symbol&sname=$1 [QSA]
+RewriteRule ^symbol/(\w{2,25})(\/|)$ index.php?app=symbol&sname=$1 [QSA]
 # RewriteRule ^symbol/(\w{3,25})/(\d+)(\/|)$ index.php?app=symbol&sname=$1&symbol_id=$2 [QSA]
 # RewriteRule ^(\w{3,25})/(following|followers|follow_requests)(\/|)$ index.php?app=watchings&sname=$1&tab=$2 [QSA]
-RewriteRule ^symbol/(\w{3,25})/(following|watchers|follow_requests)(\/|)$ index.php?app=watchings&sname=$1&tab=$2 [QSA]
-RewriteRule ^symbol/(\w{3,25})/(posts|media|likes)(\/|)$ index.php?app=symbol&sname=$1&tab=$2 [QSA]
+RewriteRule ^symbol/(\w{2,25})/(following|watchers|follow_requests)(\/|)$ index.php?app=watchings&sname=$1&tab=$2 [QSA]
+RewriteRule ^symbol/(\w{2,25})/(posts|media|likes)(\/|)$ index.php?app=symbol&sname=$1&tab=$2 [QSA]
 
 ErrorDocument 404 /index.php?app=err404
 

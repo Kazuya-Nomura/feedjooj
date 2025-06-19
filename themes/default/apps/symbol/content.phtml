@@ -40,104 +40,6 @@
 		}
 	?>
 
-	<script language="javascript"> 
-		select = (pane) => {
-		console.log(pane);
-		var selectionPane = document.getElementsByClassName("profile-activity-navbar");
-		if (pane === 'posts') {
-			if (state === 'posts') return;
-			$("#posts").addClass("show active");
-			if ($("#trending").removeClass("show active"));
-			// if ($("#news").removeClass("show active"));
-			if ($("#about").removeClass("show active"));
-			state = "posts";
-			for (var i = 0; i < 4; i++) {
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[0].classList.add("active");
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[0].classList.add("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
-			}
-		}
-		else if (pane === 'trending') {
-			if (state === 'trending') return;
-			$("#trending").addClass("show active");
-			if ($("#posts").removeClass("show active"));
-			// if ($("#news").removeClass("show active"));
-			if ($("#about").removeClass("show active"));
-			state = 'trending';
-			for (var i = 0; i < 4; i++) {
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[1].classList.add("active");
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[1].classList.add("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
-			}
-			if (window.scrollY > 400) {
-				about.scrollIntoView({
-					behavior: 'smooth',
-					block: 'start'
-				});
-				window.scrollTo(0, 400);
-			}
-		}
-		else if (pane === 'about') {
-			if (state === 'about') return;
-			$("#about").addClass("show active");
-			if ($("#posts").removeClass("show active"));
-			if ($("#trending").removeClass("show active"));
-			// if ($("#news").removeClass("show active"));
-			state = 'about';
-			for (var i = 0; i < 4; i++) {
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[2].classList.add("active");
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[2].classList.add("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
-				selectionPane[i]?.getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
-				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
-			}
-			if (window.scrollY > 400) {
-				trending.scrollIntoView({
-					behavior: 'smooth',
-					block: 'start'
-				});
-			}
-		}
-		// else if (pane === 'news') {
-		// 	if (state === 'news') return;
-		// 	$("#news").addClass("show active");
-		// 	if ($("#posts").removeClass("show active"));
-		// 	if ($("#trending").removeClass("show active"));
-		// 	if ($("#about").removeClass("show active"));
-		// 	state = 'news';
-		// 	for (var i = 0; i < 4; i++) {
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.add("active");
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.add("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
-		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
-		// 	}
-		// 	if (window.scrollY > 400) {
-		// 		news.scrollIntoView({
-		// 			behavior: 'smooth',
-		// 			block: 'start'
-		// 		});
-		// 	}
-		// }
-	}
-	</script>
-
 	<div class="h-laptop">
 		<div class="mobile-bottom-navbar2" data-app="mobile-navbar">
 			<div class="mobile-bottom-navbar-inner">
@@ -682,6 +584,102 @@
 		itemtsToShow: 5,
 	});
 	var state = "posts";
+
+	select = (pane) => {
+		console.log(pane);
+		var selectionPane = document.getElementsByClassName("profile-activity-navbar");
+		if (pane === 'posts') {
+			if (state === 'posts') return;
+			$("#posts").addClass("show active");
+			if ($("#trending").removeClass("show active"));
+			// if ($("#news").removeClass("show active"));
+			if ($("#about").removeClass("show active"));
+			state = "posts";
+			for (var i = 0; i < 4; i++) {
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.add("active");
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.add("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
+			}
+		}
+		else if (pane === 'trending') {
+			if (state === 'trending') return;
+			$("#trending").addClass("show active");
+			if ($("#posts").removeClass("show active"));
+			// if ($("#news").removeClass("show active"));
+			if ($("#about").removeClass("show active"));
+			state = 'trending';
+			for (var i = 0; i < 4; i++) {
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.add("active");
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.add("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
+			}
+			if (window.scrollY > 400) {
+				about.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+				window.scrollTo(0, 400);
+			}
+		}
+		else if (pane === 'about') {
+			if (state === 'about') return;
+			$("#about").addClass("show active");
+			if ($("#posts").removeClass("show active"));
+			if ($("#trending").removeClass("show active"));
+			// if ($("#news").removeClass("show active"));
+			state = 'about';
+			for (var i = 0; i < 4; i++) {
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.add("active");
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
+				selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.remove("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.add("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
+				selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
+				// selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.remove("active");
+			}
+			if (window.scrollY > 400) {
+				trending.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start'
+				});
+			}
+		}
+		// else if (pane === 'news') {
+		// 	if (state === 'news') return;
+		// 	$("#news").addClass("show active");
+		// 	if ($("#posts").removeClass("show active"));
+		// 	if ($("#trending").removeClass("show active"));
+		// 	if ($("#about").removeClass("show active"));
+		// 	state = 'news';
+		// 	for (var i = 0; i < 4; i++) {
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[3].classList.add("active");
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[0].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[1].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("css-1dbjc4nc1")[2].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[3].classList.add("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[0].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[1].classList.remove("active");
+		// 		selectionPane[i].getElementsByClassName("navbar-item-btn")[2].classList.remove("active");
+		// 	}
+		// 	if (window.scrollY > 400) {
+		// 		news.scrollIntoView({
+		// 			behavior: 'smooth',
+		// 			block: 'start'
+		// 		});
+		// 	}
+		// }
+	}
 
 	new Vue({
 		el: "#vue-main-search-app",

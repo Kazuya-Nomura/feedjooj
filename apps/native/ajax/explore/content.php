@@ -44,18 +44,43 @@ if ($action == 'load_more') {
                 $search_query = cl_croptxt($search_query, 32);
             }
 
-            // $query_result = cl_search_symbols($search_query, $offset, 30);                       /* edited by kevin, New Update. to show coins not hot symbols */
-            $query_result = cl_search_page($search_query, $offset, 30);
+            $html_arr = array();
             
-            if (not_empty($query_result)) {
-                foreach ($query_result as $cl['li']) {
-                    // $html_arr[] = cl_template('explore/includes/li/symbols_li');                     /* edited by kevin, New Update. to show coins not hot symbols */
-                    $html_arr[] = cl_template('explore/includes/li/page_li');                   
+            // For short symbols (2-3 chars), prioritize exact matches from symbols
+            if (strlen($search_query) <= 3) {
+                // First try symbols search (with our improved case-insensitive search)
+                $symbols_result = cl_search_symbols($search_query, $offset, 30);
+                
+                if (not_empty($symbols_result)) {
+                    foreach ($symbols_result as $cl['li']) {
+                        $html_arr[] = cl_template('explore/includes/li/symbols_li');
+                    }
                 }
-
+                
+                // Also try page search for completeness
+                $page_result = cl_search_page($search_query, $offset, 30);
+                
+                if (not_empty($page_result)) {
+                    foreach ($page_result as $cl['li']) {
+                        $html_arr[] = cl_template('explore/includes/li/page_li');
+                    }
+                }
+            } 
+            // For longer queries, use standard search
+            else {
+                $page_result = cl_search_page($search_query, $offset, 30);
+                
+                if (not_empty($page_result)) {
+                    foreach ($page_result as $cl['li']) {
+                        $html_arr[] = cl_template('explore/includes/li/page_li');
+                    }
+                }
+            }
+            
+            if (not_empty($html_arr)) {
                 $data['status'] = 200;
                 $data['html']   = implode("", $html_arr);
-            }  
+            }
         }
         else if ($type == "people") {
             if (not_empty($search_query)) {
@@ -124,21 +149,47 @@ else if($action == 'search') {
                 $data['html']   = implode("", $html_arr);
             }  
         }
-       if ($type == "symbols") {
+        if ($type == "symbols") {
             $search_query = cl_text_secure($search_query);
             $search_query = cl_croptxt($search_query, 32);
-            // $query_result = cl_search_symbols($search_query, false, 30);
-            $query_result = cl_search_page($search_query, false, 30);
             
-            if (not_empty($query_result)) {
-                foreach ($query_result as $cl['li']) {
-                    // $html_arr[] = cl_template('explore/includes/li/symbols_li');
-                    $html_arr[] = cl_template('explore/includes/li/page_li');
+            $html_arr = array();
+            
+            // For short symbols (2-3 chars), prioritize exact matches from symbols
+            if (strlen($search_query) <= 3) {
+                // First try symbols search (with our improved case-insensitive search)
+                $symbols_result = cl_search_symbols($search_query, false, 30);
+                
+                if (not_empty($symbols_result)) {
+                    foreach ($symbols_result as $cl['li']) {
+                        $html_arr[] = cl_template('explore/includes/li/symbols_li');
+                    }
                 }
-
+                
+                // Also try page search for completeness
+                $page_result = cl_search_page($search_query, false, 30);
+                
+                if (not_empty($page_result)) {
+                    foreach ($page_result as $cl['li']) {
+                        $html_arr[] = cl_template('explore/includes/li/page_li');
+                    }
+                }
+            } 
+            // For longer queries, use standard search
+            else {
+                $page_result = cl_search_page($search_query, false, 30);
+                
+                if (not_empty($page_result)) {
+                    foreach ($page_result as $cl['li']) {
+                        $html_arr[] = cl_template('explore/includes/li/page_li');
+                    }
+                }
+            }
+            
+            if (not_empty($html_arr)) {
                 $data['status'] = 200;
                 $data['html']   = implode("", $html_arr);
-            }  
+            }
         }
         else if ($type == "people") {
             $search_query = cl_text_secure($search_query);
