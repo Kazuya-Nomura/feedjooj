@@ -790,7 +790,6 @@
 										</span>
 									</a>
 								</button>
-								<?php if (empty($cl['li']['is_owner'])): ?>
 									<?php if (empty($cl['li']['has_reposted'])): ?>					<!-- edited by kevin to show buttongroup for repost/quote -->
 										<div class="dropup ">										
 											<button class="ctrls-item repost dropdown-toggle" data-an="repost-ctrl" data-toggle="dropdown">
@@ -803,7 +802,9 @@
 											</button>
 											<ul class="dropdown-menu">
 												<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_comment('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Quote</button></li>
-												<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
+												<?php if (empty($cl['li']['is_owner'])): ?>
+													<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
+												<?php endif; ?>
 											</ul>
 										</div>
 									<?php else: ?>					<!-- edited by kevin to show buttongroup for repost/quote -->
@@ -818,10 +819,11 @@
 											</button>
 											<ul class="dropdown-menu">
 												<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_comment('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Quote</button></li>
-												<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
+												<?php if (empty($cl['li']['is_owner'])): ?>
+													<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
+												<?php endif; ?>
 											</ul>
 										</div>
-									<?php endif; ?>
 								<?php endif; ?>
 								<?php if (empty($cl['li']['has_liked'])): ?>
 									<button class="ctrls-item likes"

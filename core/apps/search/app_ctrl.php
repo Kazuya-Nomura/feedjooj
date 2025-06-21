@@ -36,12 +36,15 @@ function cl_search_hashtags($keyword = "", $offset = false, $limit = 30) {
 }
 function cl_search_symbols($keyword = "", $offset = false, $limit = 30) {
 	global $db;
-
+    error_log(("keyword: " . $keyword));
     $data    = array();
     $db      = $db->where('posts', '0', '>');
     $db      = $db->orderBy('id','DESC');
     $db      = $db->orderBy('posts','DESC');
     $db      = $db->orderBy('time','DESC');
+    if (not_empty($keyword)) {
+        $db->orderBy("(symbol = '{$keyword}')", 'DESC'); // Full match first
+    }
     $keyword = ltrim($keyword,'$');
     $db      = (is_posnum($offset)) ? $db->where('id', $offset, '<') : $db;
     $db      = (not_empty($keyword)) ? $db->where('symbol', "%{$keyword}%", 'LIKE') : $db;

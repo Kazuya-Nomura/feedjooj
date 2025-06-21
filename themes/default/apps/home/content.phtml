@@ -1,6 +1,6 @@
 <div class="timeline-container" data-app="homepage">
 	<div class="timeline-header symbol_header" data-el="tl-header">
-		
+		<pre style="color:blue;"><?php echo count($cl["feed"]); ?></pre>
 	<?php echo cl_template('common/bot_line'); ?>
 		<div class="nav-container-top">
 			<ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
@@ -125,9 +125,10 @@
 					<div class="timeline-posts-container">
 						<div class="timeline-posts-ls" data-an="entry-list">
 							<?php foreach ($cl["feed"] as $cl['li']): ?>
-								<?php if (empty($cl['li']['is_repost']) || !$cl['li']['is_repost']): ?>
 								<?php $count++; ?>
-								<?php echo cl_template('timeline/post'); ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
+									<?php echo cl_template('timeline/post'); ?>
 								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow');
@@ -166,9 +167,10 @@
 					<div class="timeline-posts-container">
 						<div class="timeline-posts-ls" data-an="entry-list">
 							<?php foreach ($cl["trending"] as $cl['li']): ?>
-								<?php if (empty($cl['li']['is_repost']) || !$cl['li']['is_repost']): ?>
 								<?php $count++; ?>
-								<?php echo cl_template('timeline/post'); ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
+									<?php echo cl_template('timeline/post'); ?>
 								<?php endif; ?>
 							<?php endforeach; ?>
 						</div>
@@ -195,7 +197,10 @@
 						<div class="timeline-posts-ls" data-an="entry-list">
 							<?php foreach ($cl["tl_feed"] as $cl["li"]): ?>
 								<?php $count++; ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
 								<?php echo cl_template('timeline/post'); ?>
+								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow_feed');
 								} ?>
@@ -236,7 +241,10 @@
 						<div class="timeline-posts-ls" data-an="entry-list">
 							<?php foreach ($cl["sm_feed"] as $cl["li"]): ?>
 								<?php $count++; ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
 								<?php echo cl_template('timeline/post'); ?>
+								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow_feed2');			/* edited to make watching work (button to slide) 2024.9.15*/
 								} ?>
