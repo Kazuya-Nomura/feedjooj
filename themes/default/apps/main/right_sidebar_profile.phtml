@@ -84,13 +84,11 @@ if (empty($cl['prof_user']['is_blocked']) && empty($cl['prof_user']['me_blocked'
 <div class="right-sb-container sidebar" data-app="right-sidebar">
 	<div class="sidebar__inner">
 		<div class="right-sidebar">
-			<div class="sticky-search-wrapper">
-				<div class="main-search-bar-container" style="
-						position: sticky;
-						z-index: 1000;
-						top: 20px;
-						background: var(--smc-main-bg-color, #ffffff);
-					">
+			<div class="main-search-bar-container" style="
+					position: sticky;
+					z-index: 1000;
+					top: 20px;
+				">
 				<form class="form" id="vue-main-search-app1" v-on:submit="search_onsubmit" autocomplete="off">
 					<div class="input-holder">
 						<input v-model="search_query" v-on:input="search" type="text" class="form-control"
@@ -116,7 +114,6 @@ if (empty($cl['prof_user']['is_blocked']) && empty($cl['prof_user']['me_blocked'
 						</div>
 					</div>
 				</form>
-				</div>
 			</div>
 
 			<!-- User Media -->

@@ -1,12 +1,12 @@
 <div class="timeline-pubbox-container">
 	<div class="lp">
 		<div class="avatar">
-			<img src="<?php echo (isset($cl['prof_user']) && isset($cl['prof_user']['avatar'])) ? $cl['prof_user']['avatar'] : (isset($cl['symbol']['avatar']) ? $cl['symbol']['avatar'] : ''); ?>" alt="Avatar">
+			<img src="<?php echo isset($cl['prof_user']) ? $cl['prof_user']['avatar'] : $cl['symbol']['avatar']; ?>" alt="Avatar">
 		</div>
 	</div>
 	<div class="rp">
 		<form class="form" id="vue-pubbox-app-<?php echo ($cl['pb_id']); ?>" v-on:submit="add($event)">
-			<input type="text" data-app="symbol_id" style="display:none" name="symbol_id" value="<?php echo (isset($cl['symbol']['id']) ? $cl['symbol']['id'] : ''); ?>"/>
+			<input type="text" data-app="symbol_id" style="display:none" name="symbol_id" value="<?php echo $cl['symbol']['id']; ?>"/>
 			<div class="question-holder">
 				<input ref="question_input" v-on:input.trim="text_input_trigger" class="autoresize" v-model="question" name="question" placeholder="Question"></input>
 				<textarea ref="text_input" v-on:input.trim="text_input_trigger" class="autoresize" v-model="answer" name="answer" placeholder="Answer"></textarea>

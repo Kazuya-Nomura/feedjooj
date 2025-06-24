@@ -9,8 +9,8 @@
 		.with-tooltip::after {
 			content: attr(data-content);
 			position: absolute;
-			bottom: 100%;
-			left: 50%;
+			top: 300%;
+			left: 100%;
 			transform: translateX(-50%);
 			background-color: rgba(150, 150, 150, 0.8);
 			color: white;
@@ -28,11 +28,11 @@
 		.with-tooltip::before {
 			content: '';
 			position: absolute;
-			bottom: 100%;
-			left: 50%;
-			transform: translateX(-50%) translateY(100%);
+			top: 300%;
+			left: 75%;
+			transform: translateX(-50%) translateY(-100%);
 			border: 5px solid transparent;
-			border-top-color: rgba(0, 0, 0, 0.8);
+			border-bottom-color: rgb(124 126 128);
 			opacity: 0;
 			visibility: hidden;
 			transition: opacity 0.3s, visibility 0.3s;
@@ -50,7 +50,9 @@
 
 		use Aws\DynamoDb\NumberValue;
 
-		$coin_id = strtoupper($cl['prof_user']['symbol_price']);
+		$coin_id = strtoupper($cl['prof_user']['raw_sname']);
+		// print_r('<pre>' . json_encode($cl['prof_user']) . '</pre>');
+		// print_r('<pre>' . $coin_id . '</pre>');
 		$url = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=" . $coin_id . "&tsyms=USD";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -466,15 +468,13 @@
 					</div>
 				</div>
 				<div style="display: flex; text-align:left; align-items:center; padding: 9px 0px">
-					<div style="width: 85%; display:flex;"  class="with-tooltip" data-content="<?php echo cl_translate("The coin prices are approximate"); ?>">
-						<?php if (isset($cl['coin_one']) && !empty($cl['coin_one'])) : ?>
-							<div style="padding-left: 14px; font-size:xx-large; color:var(--smc-main-text-color); font-weight:bold" id='price'>
-								<?php echo "$" . $cl['coin_one']['price']; ?>
+					<div style="width: 85%; display:flex;">
+						<div style="padding-left:10px; font-weight:bold; color: <?php echo (isset($cl['coin_one']['change_pct_24h']) && floatval($cl['coin_one']['change_pct_24h']) > 0) ? '#06806b' : '#dc3545'; ?>;"  class="with-tooltip" data-content="<?php echo cl_translate("The coin prices are approximate"); ?>">
+								<span style="padding-left: 14px; font-size:xx-large; color:var(--smc-main-text-color); font-weight:bold" id='price'>
+									<?php echo (isset($cl['coin_one']['price']) ? "$" . $cl['coin_one']['price'] : ''); ?>
+								</span>
+								<?php echo (isset($cl['coin_one']['change_pct_24h']) ? $cl['coin_one']['change_pct_24h'] : ''); ?>% (1d)
 							</div>
-							<div style="padding-left:10px; font-weight:bold; color: <?php echo (isset($cl['coin_one']['change_pct_24h']) && floatval($cl['coin_one']['change_pct_24h']) > 0) ? '#06806b' : '#dc3545'; ?>;">
-								<?php echo $cl['coin_one']['change_pct_24h']; ?>% (1d)
-							</div>
-						<?php endif; ?>
 					</div>
 					<div style="width: 15%; padding:10px 0px;">
 						<div class="profile-activity-stats-info" style="justify-content: end; margin-bottom: 0px; padding:0px 10px 0px 0px;">
@@ -730,6 +730,37 @@
 	});
 	var state = "posts";
 
+// Show login modal and lock scroll if not logged in and scrolled more than 500px
+<?php if (empty($cl['is_logged'])): ?>
+(function() {
+    let loginModalShown = false;
+    function lockScroll() {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+    }
+    function unlockScroll() {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+    }
+    window.addEventListener('scroll', function() {
+        if (!loginModalShown && window.scrollY > 5000) {
+            loginModalShown = true;
+            if (typeof $ !== 'undefined' && $('#loginModal').length) {
+                $('#loginModal').modal('show');
+                lockScroll();
+                // Unlock scroll when modal is closed
+                $('#loginModal').on('hidden.bs.modal', function() {
+                    unlockScroll();
+                    loginModalShown = false;
+                });
+            }
+        }
+    });
+})();
+<?php endif; ?>
+
 	new Vue({
 		el: "#vue-main-search-app",
 		data: {
@@ -925,7 +956,7 @@
 		}
 
 		@media (max-width: 1024px) {
-			body main.main-content-container div.main-content-container-inner div.timeline-container-wrapper div.timeline-container-inner div.timeline-container {
+			body main.main-content-container div.main-content-container-inner div.timeline-container-wrapper div.timeline-container_inner div.timeline-container {
 				padding-top: 83px !important;
 			}
 		}

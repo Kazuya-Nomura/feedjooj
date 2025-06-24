@@ -70,7 +70,7 @@
 				</textarea>		<!-- edited by kevin to show placeholder well -->
 			</div>
 			<input type="text" data-app="selected_repost_id_symbol" style="display:none" name="selected_repost_id_symbol"/>
-			<input type="hidden" name="symbol_id" value="<?php echo isset($cl['symbol_id']) ? htmlspecialchars($cl['symbol_id']) : ''; ?>">
+			<input type="hidden" name="symbol_id" value="<?php echo htmlspecialchars($cl['symbol_id']); ?>">
 			<div class="input-autocomplete" v-if="hashtags.tags.length">
 				<div class="input-autocomplete__hashtags">
 					<div class="input-autocomplete__hashtags-list">

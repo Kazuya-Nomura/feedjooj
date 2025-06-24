@@ -36,7 +36,7 @@ function cl_search_hashtags($keyword = "", $offset = false, $limit = 30) {
 }
 function cl_search_symbols($keyword = "", $offset = false, $limit = 30) {
 	global $db;
-    error_log(("keyword: " . $keyword));
+
     $data    = array();
     $db      = $db->where('posts', '0', '>');
     $db      = $db->orderBy('id','DESC');

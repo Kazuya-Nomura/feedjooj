@@ -86,3 +86,34 @@
       }
 }
 </style>
+<script>
+	<?php if (empty($cl['is_logged'])): ?>
+	(function() {
+		let loginModalShown = false;
+		function lockScroll() {
+			document.body.style.overflow = 'hidden';
+			document.body.style.position = 'fixed';
+			document.body.style.width = '100%';
+		}
+		function unlockScroll() {
+			document.body.style.overflow = '';
+			document.body.style.position = '';
+			document.body.style.width = '';
+		}
+		window.addEventListener('scroll', function() {
+			if (!loginModalShown && window.scrollY > 2000) {
+				loginModalShown = true;
+				if (typeof $ !== 'undefined' && $('#loginModal').length) {
+					$('#loginModal').modal('show');
+					lockScroll();
+					// Unlock scroll when modal is closed
+					$('#loginModal').on('hidden.bs.modal', function() {
+						unlockScroll();
+						loginModalShown = false;
+					});
+				}
+			}
+		});
+	})();
+	<?php endif; ?>
+</script>

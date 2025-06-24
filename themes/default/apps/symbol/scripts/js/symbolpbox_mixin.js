@@ -13,7 +13,7 @@ var pubbox_form_app_mixin = Object({
         return {
 			expect : "expectation",
             text: "",
-            prefix: "$<?php echo (isset($se['username']) ? $se['username'] : ''); ?>",
+            prefix: "$<?php echo ($cl['prof_user']['username']); ?>",
             text_ph_orig: "<?php echo cl_translate('Hello, What is new with you today?'); ?>",
             text_ph: "",
             images: [],

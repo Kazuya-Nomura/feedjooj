@@ -9087,7 +9087,6 @@ body
   input:focus {
   box-shadow: none;
   outline: none;
-  background: transparent;
   border: 2px solid var(--smc-main-uiel-color);
 }
 

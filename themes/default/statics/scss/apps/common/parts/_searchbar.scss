@@ -34,7 +34,7 @@ div.timeline-searchbar {
                     box-shadow: none;
                     outline: none;
                     border: 2px solid var(--cl-primary-color);
-                    background: var(--cl-primary-bg-color);
+                    // background: var(--cl-primary-bg-color);
                     &+span.keyword-input__left-icon svg {
                         fill: var(--cl-primary-color);
                         opacity: 1;
