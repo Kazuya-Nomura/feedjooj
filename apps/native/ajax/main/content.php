@@ -2603,14 +2603,14 @@ else if($action == 'search') {
             $html_arr     = array();
 
             if (not_empty($page_result)) {
-                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold pt-3">Coins</div>';
+                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold py-3">Coins</div>';
                 foreach ($page_result as $cl['li']) {
                     $html_arr[] = cl_template('main/includes/search/pages_li');
                 }
             }
 
             if (not_empty($query_result)) {
-                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold pt-3">Symbols</div>';
+                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold py-3">Symbols</div>';
                 foreach ($query_result as $cl['li']) {
                     $html_arr[] = cl_template('main/includes/search/symbols_li');
                 }
@@ -2629,14 +2629,14 @@ else if($action == 'search') {
             $html_arr    = array();
 
             if (not_empty($page_result)) {
-                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold pt-3">Coins</div>';
+                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold py-3">Coins</div>';
                 foreach ($page_result as $cl['li']) {
                     $html_arr[] = cl_template('main/includes/search/pages_li');
                 }
             }
 
             if (not_empty($user_result)) {
-                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold pt-3">Users</div>'; 
+                $html_arr[] = '<div class="px-2.5 text-[14px] font-semibold py-3">Users</div>'; 
                 foreach ($user_result as $cl['li']) {
                     $html_arr[] = cl_template('main/includes/search/users_li');
                 }

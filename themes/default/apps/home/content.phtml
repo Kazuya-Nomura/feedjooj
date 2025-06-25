@@ -1,7 +1,16 @@
 <div class="timeline-container" data-app="homepage">
 	<div class="timeline-header symbol_header" data-el="tl-header">
-		
-	<?php echo cl_template('common/bot_line'); ?>
+		<?php echo cl_template('common/bot_line'); ?>
+		<div class="lp" style="display: inline-flex; align-items:center; padding-top:10px;">
+			<span class="go-back" onclick="SMColibri.go_back();">
+				<?php echo cl_ikon('arrow-left'); ?>
+			</span>
+			<div class="nav-link-holder" style="display: flex;justify-content: center;align-items: center;">
+				<a href="<?php echo cl_link("home"); ?>" data-spa="true">
+					<?php echo cl_translate("Home"); ?>
+				</a>
+			</div>
+		</div>
 		<div class="nav-container-top">
 			<ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
 				<li role="presentation">
@@ -123,10 +132,13 @@
 				<?php $count = 0; ?>
 				<?php if (not_empty($cl["feed"]) && is_array($cl['feed'])): ?>
 					<div class="timeline-posts-container">
-						<div class="timeline-posts-ls" data-an="entry-list">
+						<div class="timeline-posts-ls" data-an="entry-list" style="margin-top: 0px; padding-top: 40px;">
 							<?php foreach ($cl["feed"] as $cl['li']): ?>
 								<?php $count++; ?>
-								<?php echo cl_template('timeline/post'); ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
+									<?php echo cl_template('timeline/post'); ?>
+								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow');
 								} ?>
@@ -162,10 +174,13 @@
 				<?php $count = 0; ?>
 				<?php if (not_empty($cl["trending"]) && is_array($cl['trending'])): ?>
 					<div class="timeline-posts-container">
-						<div class="timeline-posts-ls" data-an="entry-list">
+						<div class="timeline-posts-ls" data-an="entry-list" style="margin-top: 0px; padding-top: 40px;">
 							<?php foreach ($cl["trending"] as $cl['li']): ?>
 								<?php $count++; ?>
-								<?php echo cl_template('timeline/post'); ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
+									<?php echo cl_template('timeline/post'); ?>
+								<?php endif; ?>
 							<?php endforeach; ?>
 						</div>
 						<?php if (count($cl["trending"]) == 30): ?>
@@ -178,7 +193,7 @@
 					</div>
 				<?php else: ?>
 					<div class="timeline-posts-container">
-						<div class="timeline-posts-ls" data-an="entry-list">
+						<div class="timeline-posts-ls" data-an="entry-list" style="margin-top: 0px; padding-top: 40px;">
 							<?php echo cl_template('home/includes/no_top_posts'); ?>
 						</div>
 					</div>
@@ -188,10 +203,13 @@
 				<div class="timeline-posts-container" style="margin-top: 0px;">
 					<?php $count = 0; ?>
 					<?php if (not_empty($cl["tl_feed"])): ?>
-						<div class="timeline-posts-ls" data-an="entry-list">
+						<div class="timeline-posts-ls" data-an="entry-list" style="margin-top: 0px; padding-top: 40px;">
 							<?php foreach ($cl["tl_feed"] as $cl["li"]): ?>
 								<?php $count++; ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
 								<?php echo cl_template('timeline/post'); ?>
+								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow_feed');
 								} ?>
@@ -229,10 +247,13 @@
 				<div class="timeline-posts-container" style="margin-top: 0px;">
 					<?php $count = 0; ?>
 					<?php if (not_empty($cl["sm_feed"])): ?>
-						<div class="timeline-posts-ls" data-an="entry-list">
+						<div class="timeline-posts-ls" data-an="entry-list" style="margin-top: 0px; padding-top: 40px;">
 							<?php foreach ($cl["sm_feed"] as $cl["li"]): ?>
 								<?php $count++; ?>
+								<?php if (not_empty($cl['li']['is_repost'])): ?>
+								<?php else: ?>
 								<?php echo cl_template('timeline/post'); ?>
+								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow_feed2');			/* edited to make watching work (button to slide) 2024.9.15*/
 								} ?>

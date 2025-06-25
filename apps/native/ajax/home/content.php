@@ -28,8 +28,14 @@ else if ($action == 'load_more') {
         $posts_ls = cl_get_timeline_feed(30, $offset);
 
         if (not_empty($posts_ls)) {
-            foreach ($posts_ls as $cl['li']) {
-                $html_arr[] = cl_template('timeline/post');
+            foreach ($posts_ls as $data) {
+                if(!is_array($data) || empty($data) || not_empty($data['is_repost'])) {
+                    continue;
+                } else {
+                    $cl['li'] = $data;
+                    error_log(json_encode($cl['li']));
+                    $html_arr[] = cl_template('timeline/post');
+                }
             }
 
             $data['status'] = 200;

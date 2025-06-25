@@ -1,32 +1,37 @@
-<div class="right-sb-container sidebar" data-app="right-sidebar">
-	<div class="sidebar__inner">
-		<div class="main-search-bar-container">
-			<form class="form" id="vue-main-search-app1" v-on:submit="search_onsubmit" autocomplete="off">
-				<div class="input-holder">
-					<input v-model="search_query" v-on:input="search" type="text" class="form-control"
-						placeholder="<?php echo cl_translate("Search for people, hashtags..", array('name' => $cl['config']['name'])); ?>">
-					<a href="#">
-						<?php echo cl_ikon('search'); ?>
+<div class="right-sb-container sidebar" style="margin-bottom: 100px;" >
+	<div class="sticky-search-wrapper">
+		<div class="main-search-bar-container" style="
+				position: sticky;
+				z-index: 1000;
+				top: 0px;
+			">
+		<form class="form" id="vue-main-search-app1" v-on:submit="search_onsubmit" autocomplete="off" style="padding-top: 10px; background: var(--smc-main-bg-color, #ffffff);">
+			<div class="input-holder">
+				<input v-model="search_query" v-on:input="search" type="text" class="form-control" id="search-input" name="search-input"
+					placeholder="<?php echo cl_translate("Search for people, hashtags..", array('name' => $cl['config']['name'])); ?>">
+				<a href="#">
+					<?php echo cl_ikon('search'); ?>
+				</a>
+				<span class="spinner-icon" v-if="searching">
+					<?php echo cl_ikon('spinner-icon'); ?>
+				</span>
+				<span v-on:click="cancel" class="clear-result" v-else-if="search_result">
+					<?php echo cl_ikon('close'); ?>
+				</span>
+			</div>
+			<div class="search-result-holder" v-show="search_result">
+				<div class="search-result-body">
+					<ul class="result-list" data-an="result"></ul>
+				</div>
+				<div class="search-result-footer" v-bind:class="{'disabled': (advanced_search != true) }">
+					<a v-bind:href="search_page_url" data-spa="true">
+						<?php echo cl_translate('Advanced search'); ?>
 					</a>
-					<span class="spinner-icon" v-if="searching">
-						<?php echo cl_ikon('spinner-icon'); ?>
-					</span>
-					<span v-on:click="cancel" class="clear-result" v-else-if="search_result">
-						<?php echo cl_ikon('close'); ?>
-					</span>
 				</div>
-				<div class="search-result-holder" v-show="search_result">
-					<div class="search-result-body">
-						<ul class="result-list" data-an="result"></ul>
-					</div>
-					<div class="search-result-footer" v-bind:class="{'disabled': (advanced_search != true) }">
-						<a v-bind:href="search_page_url" data-spa="true">
-							<?php echo cl_translate('Advanced search'); ?>
-						</a>
-					</div>
-				</div>
-			</form>
-		</div>
+			</div>
+		</form>
+	</div>
+	<div class="sidebar__inner" style="padding:0" data-app="right-sidebar">
 		<?php if ($cl['pn'] == "symbol"): ?>
 			<?php if ($cl['symbol']['fetch_from'] === 'TV'): ?>
 				<div class="topical-posts trading_widget_style_p1">
