@@ -28,7 +28,11 @@ if ($action == 'load_more') {
 
         	if (not_empty($feed_ls)) {
     			foreach ($feed_ls as $cl['li']) {
-    				$html_arr[] = cl_template('timeline/post');
+                    if(not_empty($cl['li']['is_repost'])) {
+                        continue;
+                    } else {
+                        $html_arr[] = cl_template('timeline/post');
+                    }
     			}
 
     			$data['status'] = 200;

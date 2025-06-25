@@ -1,7 +1,7 @@
 <div class="timeline-pubbox-container">
 	<img src="<?php echo ($me['avatar']); ?>" style="width:45px; height:45px; border-radius:10em;" alt="Avatar">
 	<div class="rp">
-		<form class="form" id="vue-pubbox-app-<?php echo ($cl['pb_id']); ?>" data-app="repost_comment_symbol_form" v-on:submit="publish_repost_symbol($event);">
+		<form class="form" id="vue-pubbox-app-repost_symbol" data-app="repost_comment_symbol_form" v-on:submit="publish_repost_symbol($event);">
 			<div v-show="active_media" class="post-privacy" v-if="post_privacy">
 				<button class="privacy-settings dropdown" type="button">
 					<div class="dropdown-toggle" data-toggle="dropdown">

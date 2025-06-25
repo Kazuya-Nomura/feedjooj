@@ -394,6 +394,7 @@ div.main-search-bar-container form {
   display: block;
   position: relative;
   margin-bottom: 0px;
+  padding-top: 10px;
 }
 
 div.main-search-bar-container form div.search-result-holder {
@@ -8993,7 +8994,7 @@ body
   transform: translate(0, 0);
   transform: translate3d(0, 0, 0);
   will-change: position, transform;
-  padding-top: 13px;
+ 
 }
 
 body
@@ -9087,7 +9088,6 @@ body
   input:focus {
   box-shadow: none;
   outline: none;
-  background: transparent;
   border: 2px solid var(--smc-main-uiel-color);
 }
 
@@ -43518,7 +43518,7 @@ body
   transform: translate(0, 0);
   transform: translate3d(0, 0, 0);
   will-change: position, transform;
-  padding-top: 13px;
+ 
 }
 
 body

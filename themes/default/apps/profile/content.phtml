@@ -497,6 +497,19 @@
 							</span>
 						</a>
 				</div>
+
+				<?php if (not_empty($cl['prof_user']['owner'])) : ?>
+					<div class="stat-holder">
+						<a href="<?php echo (cl_strf('%s/follow_requests', $cl['prof_user']['url'])); ?>" data-spa="true" class="stat-holder-inner">
+							<b>
+								<?php echo cl_number($cl['prof_user']['follow_requests']); ?>
+							</b>
+							<span>
+								<?php echo cl_translate("follow requests"); ?>
+							</span>
+						</a>
+					</div>
+				<?php endif; ?>
 			</div>
 			<?php if (not_empty($cl['prof_user']['common_follows']) || not_empty($cl['prof_user']['is_myfollower'])): ?>
 				<div class="user-profile__footer">
@@ -679,6 +692,38 @@
 			placement: 'bottom'
 		});
 	});
+	<?php if (empty($cl['is_logged'])): ?>
+		(function() {
+			let loginModalShown = false;
+			function lockScroll() {
+				document.body.style.overflow = 'hidden';
+				document.body.style.position = 'fixed';
+				document.body.style.width = '100%';
+			}
+			function unlockScroll() {
+				document.body.style.overflow = '';
+				document.body.style.position = '';
+				document.body.style.width = '';
+			}
+			window.addEventListener('scroll', function() {
+				if (!loginModalShown && window.scrollY > 2000) {
+					loginModalShown = true;
+					if (typeof $ !== 'undefined' && $('#loginModal').length) {
+						$('#loginModal').modal('show');
+						$('#loginModal .close').hide(true);
+						$("#loginModal .modal-content").css("z-index", "8000");
+						$('<div class="modal-lock" style="z-index: 7500; position: absolute; top: 0; left: 0; width: 100%; height: 500%; "></div>').appendTo('#loginModal');
+						lockScroll();
+						// Unlock scroll when modal is closed
+						$('#loginModal').on('hidden.bs.modal', function() {
+							unlockScroll();
+							loginModalShown = false;
+						});
+					}
+				}
+			});
+		})();
+	<?php endif; ?>
 </script>
 <style>
 	body{

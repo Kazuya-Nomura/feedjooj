@@ -43,9 +43,19 @@
 						bottomSpacing: 0
 					});
 
-					_smc.rsb = new StickySidebar('[data-app="right-sidebar"]', {
-						topSpacing: 0,
-						bottomSpacing: 0
+					// Fixed right sidebar initialization
+					_smc.rsb = new StickySidebar('.right-sb-container', {
+						innerWrapperSelector: '[data-app="right-sidebar"]',
+						topSpacing: 70, // Account for sticky search bar
+						bottomSpacing: 20,
+						resizeSensor: true, // Enable resize sensor for dynamic content
+						minWidth: 768 // Only apply on desktop
+					});
+
+					_smc.rsb_s = new StickySidebar('.right-sb-container', {
+						innerWrapperSelector: '.main-search-bar-container',
+						topSpacing: 0, 
+						stickyClass: 'is-sticky-search-bar',
 					});
 				}
 
@@ -63,6 +73,40 @@
 							_smc.lsb = new StickySidebar('[data-app="left-sidebar"]', {
 								topSpacing: 0,
 								bottomSpacing: 0
+							});
+						}
+					}
+
+					// Handle right sidebar
+					if ($(window).width() < 768) {
+						if (_smc.rsb) {
+							_smc.rsb.destroy();
+							_smc.rsb = null;
+						}
+					} else {
+						if (!_smc.rsb) {
+							_smc.rsb = new StickySidebar('.right-sb-container', {
+								innerWrapperSelector: '[data-app="right-sidebar"]',
+								topSpacing: 70,
+								bottomSpacing: 20,
+								resizeSensor: true,
+								minWidth: 768
+							});
+						}
+					}
+
+					// Handle right sidebar
+					if ($(window).width() < 768) {
+						if (_smc.rsb_s) {
+							_smc.rsb_s.destroy();
+							_smc.rsb_s = null;
+						}
+					} else {
+						if (!_smc.rsb_s) {
+							_smc.rsb_s = new StickySidebar('.right-sb-container', {
+								innerWrapperSelector: '.main-search-bar-container',
+								topSpacing: 0,
+								stickyClass: 'is-sticky-search-bar',
 							});
 						}
 					}
@@ -139,6 +183,10 @@
 
 						if (_smc.rsb) {
 							_smc.rsb.updateSticky();
+						}
+
+						if (_smc.rsb_s) {
+							_smc.rsb_s.updateSticky();
 						}
 					}
 				}
@@ -1819,6 +1867,7 @@ _smc.userlbox.curr_el = false;
 
 			_smc.update_ilb = function () {
 				$("a.fbox-media").fancybox({
+					root: 'body',
 					arrows: true,
 					openEffect: 'elastic',
 					closeEffect: false,
