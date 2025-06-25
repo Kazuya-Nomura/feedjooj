@@ -27,11 +27,7 @@
 					</a>
 				</div>
 				<div class="notifications-data__midline">
-						<?php if($cl['li']['subject'] == 'subscribe_request'): ?>
-							<a href="<?php echo (cl_strf('%s/follow_requests',$me['url'])); ?>" class="block-link" data-spa="true">
-						<?php else: ?>
-							<a href="<?php echo($cl['li']['url']); ?>" class="block-link" data-spa="true">
-						<?php endif; ?>
+					<a href="<?php echo($cl['li']['url']); ?>" class="block-link" data-spa="true">
 						<span class="<?php if($cl['li']['status'] == '0') {echo('unseen');}; ?>">
 							<?php if ($cl['li']['subject'] == 'verified'): ?>
 								<?php echo cl_translate('Your verification request has been accepted'); ?>
@@ -74,11 +70,7 @@
 						</button>
 					</div>
 					<div class="notif-ctrls__navnext">
-						<?php if($cl['li']['subject'] == 'subscribe_request'): ?>
-							<a href="<?php echo (cl_strf('%s/follow_requests',$me['url'])); ?>" data-spa="true" class="block-link">
-						<?php else: ?>
-							<a href="<?php echo($cl['li']['url']); ?>" data-spa="true" class="block-link">
-						<?php endif; ?>
+						<a href="<?php echo($cl['li']['url']); ?>" data-spa="true" class="block-link"> 
 							<?php echo cl_icon("navigate_next"); ?>
 						</a>
 					</div>
