@@ -125,10 +125,8 @@
 					<div class="timeline-posts-container">
 						<div class="timeline-posts-ls" data-an="entry-list">
 							<?php foreach ($cl["feed"] as $cl['li']): ?>
-								<?php if (empty($cl['li']['is_repost']) || !$cl['li']['is_repost']): ?>
 								<?php $count++; ?>
 								<?php echo cl_template('timeline/post'); ?>
-								<?php endif; ?>
 								<?php if ($count == 3) {
 									echo cl_template('home/follow');
 								} ?>
@@ -166,10 +164,8 @@
 					<div class="timeline-posts-container">
 						<div class="timeline-posts-ls" data-an="entry-list">
 							<?php foreach ($cl["trending"] as $cl['li']): ?>
-								<?php if (empty($cl['li']['is_repost']) || !$cl['li']['is_repost']): ?>
 								<?php $count++; ?>
 								<?php echo cl_template('timeline/post'); ?>
-								<?php endif; ?>
 							<?php endforeach; ?>
 						</div>
 						<?php if (count($cl["trending"]) == 30): ?>

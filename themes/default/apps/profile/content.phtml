@@ -497,19 +497,6 @@
 							</span>
 						</a>
 				</div>
-
-				<?php if (not_empty($cl['prof_user']['owner'])) : ?>
-					<div class="stat-holder">
-						<a href="<?php echo (cl_strf('%s/follow_requests', $cl['prof_user']['url'])); ?>" data-spa="true" class="stat-holder-inner">
-							<b>
-								<?php echo cl_number($cl['prof_user']['follow_requests']); ?>
-							</b>
-							<span>
-								<?php echo cl_translate("follow requests"); ?>
-							</span>
-						</a>
-					</div>
-				<?php endif; ?>
 			</div>
 			<?php if (not_empty($cl['prof_user']['common_follows']) || not_empty($cl['prof_user']['is_myfollower'])): ?>
 				<div class="user-profile__footer">

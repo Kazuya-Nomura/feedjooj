@@ -188,8 +188,8 @@ function cl_search_posts($keyword = "",  $offset = false, $limit = 10) {
 		"offset"    => $offset,
 		"limit"     => $limit
  	));
-     $query_res = $db->rawQuery($sql);
-    //  error_log("DEBUG cl_search_posts: Reposter info set: " . json_encode($query_res));
+
+	$query_res = $db->rawQuery($sql);
     $counter   = 0;
 
 	if (cl_queryset($query_res)) {
@@ -206,7 +206,7 @@ function cl_search_posts($keyword = "",  $offset = false, $limit = 10) {
 				$post_data['comment_on']  = null;						/* edited by kevin to fetch comment on (added) */
 
 				if ($post_data['is_repost']) {
-					$reposter_data         = cl_user_data($row['reposter_id']);
+					$reposter_data         = cl_user_data($row['user_id']);
 					$post_data['reposter'] = array(
 						'name' => $reposter_data['name'],
 						'username' => $reposter_data['username'],

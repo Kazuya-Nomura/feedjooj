@@ -3,14 +3,15 @@
 		if(e.target === HTMLImageElement) return;
 		// Check if the click is not on an anchor tag (or any interactive element)
 		if (!e.target.closest('a') && !e.target.closest('.inner-content') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
-			window.location.href = "<?php echo $config['url']; ?>" + '/thread/' + id; // Set your root link here
+			alert(<?php echo $config['url']; ?>)
+			// window.location.href = '/thread/' + id; // Set your root link here
 		}
 	}
 	analyze_quote = function(e, id) {
 		if(e.target === HTMLImageElement) return;
 		// Check if the click is not on an anchor tag (or any interactive element)
 		if (!e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.publication-poll-data')) {
-			window.location.href = "<?php echo $config['url']; ?>" + '/thread/' + id; // Set your root link here
+			window.location.href = '/thread/' + id; // Set your root link here
 		}
 	}
 </script>
@@ -703,38 +704,36 @@
 									</span>
 								</a>
 							</button>
-							<?php if (empty($cl['li']['is_owner'])): ?>
-								<?php if (empty($cl['li']['has_reposted'])): ?>					<!-- edited by kevin to show buttongroup for repost/quote -->
-									<div class="dropup ">										
-										<button class="ctrls-item repost dropdown-toggle" data-an="repost-ctrl" data-toggle="dropdown">
-											<span class="icon">
-												<?php echo cl_ikon('repost'); ?>
-											</span>
-											<span class="num" data-an="reposts-count">
-												<?php echo $cl['li']['reposts_count']; ?>
-											</span>
-										</button>
-										<ul class="dropdown-menu">
-											<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_comment_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.repost'));">Quote</button></li>
-											<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
-										</ul>
-									</div>
-								<?php else: ?>					<!-- edited by kevin to show buttongroup for repost/quote -->
-									<div class="dropup ">
-										<button class="ctrls-item reposted2 dropdown-toggle" data-an="repost-ctrl" data-toggle="dropdown">
-											<span class="icon">
-												<?php echo cl_ikon('repost'); ?>
-											</span>
-											<span class="num" data-an="reposts-count">
-												<?php echo $cl['li']['reposts_count']; ?>
-											</span>
-										</button>
-										<ul class="dropdown-menu">
-											<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_comment_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.reposted2'));">Quote</button></li>
-											<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
-										</ul>
-									</div>
-								<?php endif; ?>
+							<?php if (empty($cl['li']['has_reposted'])): ?>					<!-- edited by kevin to show buttongroup for repost/quote -->
+								<div class="dropup ">										
+									<button class="ctrls-item repost dropdown-toggle" data-an="repost-ctrl" data-toggle="dropdown">
+										<span class="icon">
+											<?php echo cl_ikon('repost'); ?>
+										</span>
+										<span class="num" data-an="reposts-count">
+											<?php echo $cl['li']['reposts_count']; ?>
+										</span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_comment_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.repost'));">Quote</button></li>
+										<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
+									</ul>
+								</div>
+							<?php else: ?>					<!-- edited by kevin to show buttongroup for repost/quote -->
+								<div class="dropup ">
+									<button class="ctrls-item reposted2 dropdown-toggle" data-an="repost-ctrl" data-toggle="dropdown">
+										<span class="icon">
+											<?php echo cl_ikon('repost'); ?>
+										</span>
+										<span class="num" data-an="reposts-count">
+											<?php echo $cl['li']['reposts_count']; ?>
+										</span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_comment_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.reposted2'));">Quote</button></li>
+										<li><button style="height: 40px;" class="dropdown-item" onclick="SMColibri.repost_symbol('<?php echo $cl['li']['id']; ?>', this.closest('.dropup').querySelector('.ctrls-item'));">Reshare</button></li>
+									</ul>
+								</div>
 							<?php endif; ?>
 							<?php if (empty($cl['li']['has_liked'])): ?>
 								<button class="ctrls-item likes"
