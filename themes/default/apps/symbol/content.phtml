@@ -498,7 +498,6 @@
 					</div>
 				</div>
 					<!-- Start Add Post  -->
-					 <?php echo cl_js_template('apps/symbol/scripts/js/symbolpbox_mixin'); ?>
 				<div class="flex flex-col  w-full <?php if (empty($cl["is_logged"])): ?>hidden<?php endif; ?>">
 					<div class="homepage">
 						<div class="main-timeline-pubbox-wrapper custom-lineheight px-3 pt-3 py-2">
@@ -752,7 +751,7 @@
 				$('#loginModal').modal('show');
 				$('#loginModal .close').hide(true);
 				$("#loginModal .modal-content").css("z-index", "8000");
-				$('<div class="modal-lock" style="z-index: 7500; position: absolute; top: 0; left: 0; width: 100%; height: 500%; "></div>').appendTo('#loginModal');
+				$('<div class="modal-lock" style="z-index: 7500; position: absolute; top: 0; left: 0; width: 100%; height: 100vh; "></div>').appendTo('#loginModal');
 				lockScroll();
 				// Unlock scroll when modal is closed
 				$('#loginModal').on('hidden.bs.modal', function() {

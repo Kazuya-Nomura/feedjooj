@@ -1457,8 +1457,8 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
-  left: 20px;
+  width: 110px;
+  left: 60px;
 }
 
 .login-or-signup span::after {
@@ -1466,7 +1466,7 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
+  width: 110px;
   margin-left: 10px;
 }
 
@@ -21734,8 +21734,8 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  left: -170px;
-  width: 150px;
+  left: -210px;
+  width: 110px;
 }
 
 body.cl-app-guest
@@ -21759,7 +21759,7 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  width: 150px;
+  width: 110px;
   margin-left: 15px;
 }
 
@@ -37174,8 +37174,8 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
-  left: 20px;
+  width: 110px;
+  left: 60px;
 }
 
 .login-or-signup span::after {
@@ -37183,7 +37183,7 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
+  width: 110px;
   margin-left: 10px;
 }
 
@@ -54843,8 +54843,8 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  left: -170px;
-  width: 150px;
+  left: -210px;
+  width: 110px;
 }
 
 body.cl-app-guest
@@ -54868,7 +54868,7 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  width: 150px;
+  width: 110px;
   margin-left: 15px;
 }
 

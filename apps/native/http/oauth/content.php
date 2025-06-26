@@ -20,11 +20,10 @@ $provider_ls = array(
 );
 
 $provider      = false;
-$provider_name = fetch_or_get($_GET['provider'], false);
-echo in_array($provider_name, array_keys($provider_ls));
+$provider_name = isset($_GET['provider']) ? $_GET['provider'] : false;
 
 
-if (not_empty($provider_name)) {
+if (!empty($provider_name)) {
     $provider_name = strtolower($provider_name);
 
     if (in_array($provider_name, array_keys($provider_ls))) {
@@ -70,15 +69,13 @@ else {
     if ($provider) {
         try {
             $hybridauth    = new Hybridauth\Hybridauth($oauth_config);
-            echo json_encode($provider);
             $auth_provider = $hybridauth->authenticate($provider);
             
             $tokens        = $auth_provider->getAccessToken();
             $user_profile  = $auth_provider->getUserProfile();
-            echo json_encode($user_profile);
             
             if ($user_profile && isset($user_profile->identifier)) {
-                $fname      = fetch_or_get($user_profile->firstName, time());
+                $fname      = isset($user_profile->firstName) ? $user_profile->firstName : time();
                 $prov_email = "mail.com";
                 $prov_prefx = "xx_";
               
@@ -122,7 +119,7 @@ else {
                 $user_name  = uniqid($prov_prefx);
                 $user_email = cl_strf('%s@%s', $user_name, $prov_email);
 
-                if (not_empty($user_profile->email)) {
+                if (isset($user_profile->email) && !empty($user_profile->email)) {
                     $user_email = $user_profile->email;
                 }
 
@@ -139,7 +136,7 @@ else {
                 } 
 
                 else {
-                	$about            = fetch_or_get($user_profile->description, "");
+                	$about            = isset($user_profile->description) ? $user_profile->description : "";
                 	$email_code       = sha1(time() + rand(111,999));
     		        $password_hashed  = password_hash(time(), PASSWORD_DEFAULT);
     		        $user_ip          = cl_get_ip();
@@ -167,7 +164,7 @@ else {
 
     		        	cl_create_user_session($user_id, 'web');
 
-    		            $avatar = fetch_or_get($user_profile->photoURL, null);
+    		            $avatar = isset($user_profile->photoURL) ? $user_profile->photoURL : null;
 
     	                if (is_url($avatar)) {
     	                	$avatar = cl_import_image(array(
@@ -189,7 +186,7 @@ else {
                             if (is_posnum($ref_id)) {
                                 $ref_udata = cl_raw_user_data($ref_id);
 
-                                if (not_empty($ref_udata)) {
+                                if (!empty($ref_udata)) {
                                     cl_update_user_data($ref_id, array(
                                         'aff_bonuses' => ($ref_udata['aff_bonuses'] += 1)
                                     ));
