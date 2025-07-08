@@ -233,7 +233,7 @@
 											$image_tag = '<img src="' . $symbol_data['avatar'] . '" style="height: 16px; display:inline; position:relative; bottom:2px; border-radius:50%; margin-right: 2px;" alt="' . $symbol . '">';
 											return $image_tag . $matches[1];
 										}, $extendedText);
-										echo "<br/><a class='readAll' href='javascript:void(0);' onclick='this.parentElement.innerHTML = \"" . addslashes($modified_text . $expect) . "\";'>Read all</a>";
+										echo "<br/><a class='readAll' href='javascript:void(0);'  data-fulltext='" . htmlspecialchars($modified_text . $expect, ENT_QUOTES, 'UTF-8') . "'  onclick=\"this.parentElement.innerHTML = this.getAttribute('data-fulltext');\"> Read all</a>";
 									}
 								?>
 							</p>
