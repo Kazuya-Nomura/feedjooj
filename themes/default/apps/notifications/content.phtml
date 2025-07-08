@@ -131,6 +131,26 @@
 			</a>
 		</div>
 	</div>
+    <style>
+        .d-block#vue-notifications-app {
+            height: 100% !important;
+            overflow: scroll !important;
+            padding-bottom: 20px; 
+        }
+        .d-block#vue-notifications-app .notifications .notifications-list .notifications-list__item {
+            position: relative;
+        }
+
+        .d-block#vue-notifications-app .notifications {
+            height: 100% !important;;
+        }
+
+        .d-block#vue-notifications-app .notifications .notifications-list {
+            height: calc(100% - 60px) !important;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    </style>
 	<div class="d-block" id="vue-notifications-app">
 		<div class="notifications">
 			<?php if (not_empty($cl["notifs"])): ?>

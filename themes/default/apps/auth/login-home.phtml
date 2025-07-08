@@ -80,6 +80,36 @@
 					</button>
 				</a>
 			<?php endif; ?>
+
+			<?php if ($cl["config"]["facebook_oauth"] == "on") : ?>
+				<a href="<?php echo cl_link('oauth/facebook'); ?>" class="social-login-btn facebook">
+					<button class="btn btn-custom main-inline lg btn-block" type="button">
+						<span class="d-inline-flex flex-wn align-items-center">
+							<span class="flex-item btn-icon">
+								<?php echo cl_ikon('logos/logo-facebook'); ?>
+							</span>
+							<span class="flex-item">
+								<?php echo cl_translate("SignIn with Facebook"); ?>
+							</span>
+						</span>
+					</button>
+				</a>
+			<?php endif; ?>
+			<?php if ($cl["config"]["twitter_oauth"] == "on") : ?>
+				<a href="<?php echo cl_link('oauth/twitter'); ?>" class="social-login-btn twitter">
+					<button class="btn btn-custom main-inline lg btn-block" type="button">
+						<span class="d-inline-flex flex-wn align-items-center">
+							<span class="flex-item btn-icon">
+								<?php echo cl_ikon('logos/logo-twitter'); ?>
+							</span>
+							<span class="flex-item">
+								<?php echo cl_translate("SignIn with Twitter"); ?>
+							</span>
+						</span>
+					</button>
+				</a>
+			<?php endif; ?>
+
 			<div class="form-cta-link forgot">
 				<a data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
 					<span class="btn-outline">
@@ -89,36 +119,7 @@
 				</a>
 			</div>
 			<div class="collapse" id="collapseExample">
-
-				<?php if ($cl["config"]["facebook_oauth"] == "on") : ?>
-					<a href="<?php echo cl_link('oauth/facebook'); ?>" class="social-login-btn facebook">
-						<button class="btn btn-custom main-inline lg btn-block" type="button">
-							<span class="d-inline-flex flex-wn align-items-center">
-								<span class="flex-item btn-icon">
-									<?php echo cl_ikon('logos/logo-facebook'); ?>
-								</span>
-								<span class="flex-item">
-									<?php echo cl_translate("SignIn with Facebook"); ?>
-								</span>
-							</span>
-						</button>
-					</a>
-				<?php endif; ?>
-				<?php if ($cl["config"]["twitter_oauth"] == "on") : ?>
-					<a href="<?php echo cl_link('oauth/twitter'); ?>" class="social-login-btn twitter">
-						<button class="btn btn-custom main-inline lg btn-block" type="button">
-							<span class="d-inline-flex flex-wn align-items-center">
-								<span class="flex-item btn-icon">
-									<?php echo cl_ikon('logos/logo-twitter'); ?>
-								</span>
-								<span class="flex-item">
-									<?php echo cl_translate("SignIn with Twitter"); ?>
-								</span>
-							</span>
-						</button>
-					</a>
-				<?php endif; ?>
-
+				
 				<?php if ($cl["config"]["linkedin_oauth"] == "on") : ?>
 					<a href="<?php echo cl_link('oauth/linkedin'); ?>" class="social-login-btn linkedin">
 						<button class="btn btn-custom main-inline lg btn-block" type="button">

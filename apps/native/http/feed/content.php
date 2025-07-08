@@ -32,17 +32,5 @@ else {
 		$cl["search_query"] = cl_croptxt($cl["search_query"], 32);
 	}
 
-	// if ($cl["page_tab"] == 'htags') {
-	// 	$cl["query_result"] = cl_search_hashtags($cl["search_query"], false, 30);
-	// }
-
-	// else if($cl["page_tab"] == 'people') {
-	// 	$cl["query_result"] = cl_search_people($cl["search_query"], false, 30);
-	// }
-
-	// else {
-	// 	$cl["query_result"] = cl_search_posts($cl["search_query"], false, 30);
-	// }
-
 	$cl["http_res"]   = cl_template("feed/content");
 }

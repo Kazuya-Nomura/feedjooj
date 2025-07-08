@@ -22,10 +22,13 @@ else if ($action == 'load_more') {
     $data['status']   = 400;
     $offset           = fetch_or_get($_GET['offset'], 0);
     $html_arr         = array();
-
+    $data["offsettype"] = gettype($offset);
+    $data["offset"] = $offset;
+    $data["posum"] = is_posnum($offset);
     if (is_posnum($offset)) {    
-
+        
         $posts_ls = cl_get_timeline_feed(30, $offset);
+        $data["count"] = count($posts_ls);
 
         if (not_empty($posts_ls)) {
             foreach ($posts_ls as $data) {

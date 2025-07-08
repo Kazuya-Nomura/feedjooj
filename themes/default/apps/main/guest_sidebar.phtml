@@ -290,6 +290,8 @@
 					if (this.search_query.charAt(0) == '#') {
 						return search_htags_url.format(this.search_query.replace('#', ''));
 					} else if (this.search_query.charAt(0) == '$') {
+					console.log("Search query: ", this.search_symbols_url);
+					console.log("Search query: ", this.search_query);
 						return search_symbols_url.format(this.search_query.replace('$', ''));
 					} else {
 						return search_users_url.format(this.search_query);

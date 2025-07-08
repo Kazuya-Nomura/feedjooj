@@ -40,14 +40,20 @@ function cl_search_hashtags($keyword = "", $offset = false, $limit = 30) {
     return $data;
 }
 function cl_search_symbols($keyword = "", $offset = false, $limit = 30) {
-	global $db;
-
+    global $db;
     $data    = array();
     $db      = $db->where('posts', '0', '>');
-    $db      = $db->orderBy('posts','DESC');
-    $db      = $db->orderBy('time','DESC');
     $keyword = ltrim($keyword,'$');
-    $db      = (not_empty($keyword)) ? $db->where('symbol', "%{$keyword}%", 'LIKE') : $db;
+
+    // Add prioritization for symbols starting with the keyword
+    if (not_empty($keyword)) {
+        $db = $db->where('symbol', "%{$keyword}%", 'LIKE');
+        // Add custom order: symbols starting with keyword come first
+        $db = $db->orderBy("(symbol LIKE '{$keyword}%')", 'DESC');
+    }
+
+    // $db      = $db->orderBy('posts','DESC');
+    // $db      = $db->orderBy('time','DESC');
 
     if (is_posnum($offset)) {
         $symbols = $db->get(T_HSYMBOLS, array($offset, $limit));
@@ -58,13 +64,13 @@ function cl_search_symbols($keyword = "", $offset = false, $limit = 30) {
     
 
     if (cl_queryset($symbols)) {
-    	foreach ($symbols as $symbol_data) {
+        foreach ($symbols as $symbol_data) {
             $symbol_data['symbol']     = cl_rn_strip($symbol_data['symbol']);
-    		$symbol_data['hashsymbol'] = cl_strf("$%s", $symbol_data['symbol']);
-    		$symbol_data['url']     = cl_link(cl_strf("explore/posts?q=%s", cl_remove_emoji($symbol_data['symbol'])));
-    		$symbol_data['total']   = cl_number($symbol_data['posts']);
-    		$data[]              = $symbol_data;
-    	}
+            $symbol_data['hashsymbol'] = cl_strf("$%s", $symbol_data['symbol']);
+            $symbol_data['url']     = cl_link(cl_strf("explore/posts?q=%s", cl_remove_emoji($symbol_data['symbol'])));
+            $symbol_data['total']   = cl_number($symbol_data['posts']);
+            $data[]              = $symbol_data;
+        }
     }
     
     return $data;

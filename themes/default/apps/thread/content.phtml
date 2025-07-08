@@ -13,7 +13,7 @@
 <div class="timeline-container" data-app="thread">
 	<div class="timeline-header symbol_header" data-el="tl-header">
 		<?php echo cl_template('common/bot_line'); ?>
-		<div class="lp"  style="display: inline-flex; align-items:center; padding-top:10px;">
+		<div class="lp"  style="display: inline-flex; align-items:center; padding-top:4px;">
 			<span class="go-back" onclick="SMColibri.go_back();">
 				<?php echo cl_ikon('arrow-left'); ?>
 			</span>
@@ -256,7 +256,7 @@
 														$image_tag = '<img src="' . $symbol_data['avatar'] . '" style="height: 16px; display:inline; position:relative; bottom:2px; border-radius:50%; margin-right: 2px;" alt="' . $symbol . '">';
 														return $image_tag . $matches[1];
 													}, $extendedText);
-													echo "<br/><a class='readAll' href='javascript:void(0);' onclick='this.parentElement.innerHTML = \"" . addslashes($modified_text . $expect) . "\";'>Read all</a>";
+													echo htmlspecialchars("<br/><a class='readAll' href='javascript:void(0);' onclick='this.parentElement.innerHTML = \"" . addslashes($modified_text . $expect) . "\";'>Read all</a>");
 												}
 											?>
 										</p>

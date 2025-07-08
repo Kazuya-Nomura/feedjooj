@@ -313,6 +313,16 @@ hr{
   z-index: 500;
   background: var(--smc-main-bg-color);
 }
+
+.timeline-container[data-app="homepage"]
+.homepage
+.nav-container {
+  position: sticky;
+  top: 45px;
+  z-index: 500;
+  background: var(--smc-main-bg-color);
+}
+
 .timeline-header-chat{
   display: flex;
   flex-direction: row;
@@ -897,7 +907,7 @@ h3.login-home {
   flex-direction: row;
   display: flex;
   line-height: 30px;
-  margin-right: 20px;
+  margin-right: 10px;
   /* margin-left: 10px; */
 }
 .lp .go-back:hover {
@@ -1457,8 +1467,8 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
-  left: 20px;
+  width: 110px;
+  left: 60px;
 }
 
 .login-or-signup span::after {
@@ -1466,7 +1476,7 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
+  width: 110px;
   margin-left: 10px;
 }
 
@@ -2175,7 +2185,7 @@ body.modal-open {
     div.timeline-container-wrapper
     div.timeline-container-inner
     div.timeline-container {
-    padding-top: 80px !important;
+    padding-top: 74px !important;
   }
   .nav-container-top{
     display: block;
@@ -21734,8 +21744,8 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  left: -170px;
-  width: 150px;
+  left: -210px;
+  width: 110px;
 }
 
 body.cl-app-guest
@@ -21759,7 +21769,7 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  width: 150px;
+  width: 110px;
   margin-left: 15px;
 }
 
@@ -36707,7 +36717,7 @@ div.publication--thread-container-inner div.publication--thread-data-holder {
   flex-direction: row;
   display: flex;
   line-height: 30px;
-  margin-right: 20px;
+  margin-right: 10px;
   /* margin-left: 10px; */
 }
 .lp .go-back:hover {
@@ -37174,8 +37184,8 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
-  left: 20px;
+  width: 110px;
+  left: 60px;
 }
 
 .login-or-signup span::after {
@@ -37183,7 +37193,7 @@ body
   height: 1px;
   background: rgb(207, 217, 222);
   position: absolute;
-  width: 150px;
+  width: 110px;
   margin-left: 10px;
 }
 
@@ -37560,7 +37570,7 @@ body.modal-open {
     div.timeline-container-wrapper
     div.timeline-container-inner
     div.timeline-container {
-    padding-top: 80px !important;
+    padding-top: 74px !important;
   }
 
   .left-sb-container.sidebar {
@@ -39784,6 +39794,17 @@ body
     div.avatar-holder {
     width: 40px;
     height: 40px;
+  }  
+  body
+    main.main-content-container
+    div.main-content-container-inner
+    div.timeline-container-wrapper
+    div.timeline-container-inner
+    div.timeline-container[data-app="homepage"]
+    div.timeline-posts-container
+    div.timeline-posts-ls {
+      margin-top: 0px;
+      padding-top: 16px;
   }
 }
 
@@ -54843,8 +54864,8 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  left: -170px;
-  width: 150px;
+  left: -210px;
+  width: 110px;
 }
 
 body.cl-app-guest
@@ -54868,7 +54889,7 @@ body.cl-app-guest
   background: var(--smc-main-border-color);
   position: absolute;
   top: 8px;
-  width: 150px;
+  width: 110px;
   margin-left: 15px;
 }
 

@@ -19,15 +19,15 @@
 				
 				$(window).on('scroll', function() {
 					var navbarItem = document.getElementsByClassName("nav-link home_nav_btn active");
-					if (navbarItem && navbarItem[1].innerText.includes("For You")){
+					// if (navbarItem && navbarItem[1].innerText.includes("For You")){
 						if (SMColibri.curr_pn == "home") {
 							if(($(window).scrollTop() + $(window).height()) > ($(document).height() - 100)) {
-								if (cl_empty(_self_.timeline.loading) && _self_.timeline.loadmore) {
+								if (cl_empty(_self_.timeline.loading) && (_self_.timeline?_self_.timeline.loadmore:true)) {
 									_self_.timeline.load_old();
 								}
 							}
 						}
-					}
+					// }
 				});
 
 				setInterval(function() {
@@ -63,7 +63,11 @@
 								_self_.load_offset += 30;
 							}
 							else{
-								_self_.loadmore = false;
+								console.log("offsettype", data.offset);
+								console.log("offset", data.offset);
+								console.log("posum", data.posum);
+								console.log("count", data.count);
+								// _self_.loadmore = false;
 							}
 						}).always(function() {
 							_self_.loading = false;

@@ -1,0 +1,33 @@
+<script>
+	$(document).ready(function() {
+		// Fix for tab navigation requiring multiple clicks on mobile
+		$('.nav-tabs .nav-link').on('click', function(e) {
+			// Prevent default behavior to handle it manually
+			e.preventDefault();
+			
+			// Get the target tab
+			var targetTab = $(this).attr('href');
+			
+			// Remove active class from all tabs and add to clicked tab
+			$('.nav-tabs .nav-link').removeClass('active');
+			$(this).addClass('active');
+			
+			// Hide all tab content and show the target tab content
+			$('.tab-pane').removeClass('show active');
+			$(targetTab).addClass('show active');
+			
+			// Ensure the header and navbar are visible
+			$('.timeline-header.symbol_header').each(function() {
+				this.style.removeProperty('position');
+				this.style.removeProperty('top');
+			});
+			
+			// Scroll to top of content area with a small offset
+			$('html, body').animate({
+				scrollTop: $('.nav-container-bottom').offset().top - 120
+			}, 300);
+			
+			return false;
+		});
+	});
+</script>

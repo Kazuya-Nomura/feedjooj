@@ -24,5 +24,5 @@ $sql_db_name = "cointwee_talk";
 
 # Site URL
 // $site_url    = "https://cointwee.com"; // E.g (https://www.mysite.com)
-$site_url    = "http://localhost/jooj"; // E.g (https://www.mysite.com)
+$site_url    = "http://localhost/milestone21"; // E.g (https://www.mysite.com)
 ?>

@@ -471,7 +471,7 @@ if (empty($cl['prof_user']['is_blocked']) && empty($cl['prof_user']['me_blocked'
 		},
 		computed: {
 			search_page_url: function() {
-				if (this.search_query.length > 2) {
+				if (this.search_query.length >= 2) {
 					var search_htags_url = "<?php echo cl_link('search/htags?q={0}'); ?>";
 					var search_users_url = "<?php echo cl_link('search/people?q={0}'); ?>";
 					var search_symbols_url = "<?php echo cl_link('search/symbols?q={0}'); ?>";
@@ -505,7 +505,7 @@ if (empty($cl['prof_user']['is_blocked']) && empty($cl['prof_user']['me_blocked'
 				this.search();
 			},
 			search: function() {
-				if (this.search_query.length > 2) {
+				if (this.search_query.length >= 2) {
 					var _app_ = this;
 					delay(function() {
 						$.ajax({

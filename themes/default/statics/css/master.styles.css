@@ -19511,7 +19511,7 @@ body.cl-app-notifications
   div.notif-ctrls
   div.notif-ctrls__delete
   button.btn-custom-icon {
-  background: var(--cl-secondary-bg-color);
+  background: var(--cl-secondary-text-color);
   opacity: 0.7;
 }
 

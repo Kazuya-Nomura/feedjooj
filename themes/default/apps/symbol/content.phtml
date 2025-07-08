@@ -49,10 +49,11 @@
 	<?php
 
 		use Aws\DynamoDb\NumberValue;
+		// if (!defined('SM_COLIBRI')) {
+		// 	exit('Hacking attempt!');
+		// }
 
-		$coin_id = strtoupper($cl['prof_user']['raw_sname']);
-		// print_r('<pre>' . json_encode($cl['prof_user']) . '</pre>');
-		// print_r('<pre>' . $coin_id . '</pre>');
+		$coin_id = strtoupper($cl['prof_user']['symbol_price']);
 		$url = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=" . $coin_id . "&tsyms=USD";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -60,32 +61,70 @@
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0'));
 		$response = curl_exec($ch);
 		if ($response === false) {
-			echo 'Curl error: ' . curl_error($ch);
 			curl_close($ch);
 			exit;
-		}
-		curl_close($ch);
-		$data = json_decode($response, true);
-		if ($data && isset($data['RAW'][$coin_id]['USD']['PRICE'])) {
-			$price = (float) $data['RAW'][$coin_id]['USD']['PRICE'];
-
-			if ($price >= 1) {
-				$formatted_price = number_format($price, 2);
-			} else {
-				$significant_digits = 4;
-				$precision = $significant_digits - floor(log10(abs($price))) - 1;
-				$formatted_price = number_format($price, $precision, '.', '');
+		} else if (isset(json_decode($response, true)['Response']) && json_decode($response, true)['Response'] === 'Error') {
+			curl_close($ch);
+			$coin_id = strtoupper($cl['prof_user']['symbol_fetch_gecko']);
+			$url = "https://api.coingecko.com/api/v3/simple/price?ids=".$coin_id ."&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Mozilla/5.0'));
+			$response = curl_exec($ch);
+			if ($response === false) {
+				echo 'Curl error: ' . curl_error($ch);
+				curl_close($ch);
+				exit;
 			}
-
-			$cl['coin_one'] = [
-				'price' => $formatted_price,
-				'high_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['HIGH24HOUR'], 2),
-				'low_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['LOW24HOUR'], 2),
-				'change_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['CHANGE24HOUR'], 2),
-				'change_pct_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['CHANGEPCT24HOUR'], 2)
-			];
+			curl_close($ch);
+			$data = json_decode($response, true);
+			$data = reset($data);
+			if ($data && isset($data['usd'])) {
+				$price = (float) $data['usd'];
+	
+				if ($price >= 1) {
+					$formatted_price = number_format($price, 2);
+				} else {
+					$significant_digits = 4;
+					$precision = $significant_digits - floor(log10(abs($price))) - 1;
+					$formatted_price = number_format($price, $precision, '.', '');
+				}
+	
+				$cl['coin_one'] = [
+					'price' => $formatted_price,
+					// 'high_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['HIGH24HOUR'], 2),
+					// 'low_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['LOW24HOUR'], 2),
+					// 'change_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['CHANGE24HOUR'], 2),
+					'change_pct_24h' => number_format((float)$data['usd_24h_change'], 2)
+				];
+			} else {
+				$cl['coin_one'] = [];
+			}
 		} else {
-			$cl['coin_one'] = [];
+			curl_close($ch);
+			$data = json_decode($response, true);
+			if ($data && isset($data['RAW'][$coin_id]['USD']['PRICE'])) {
+				$price = (float) $data['RAW'][$coin_id]['USD']['PRICE'];
+
+				if ($price >= 1) {
+					$formatted_price = number_format($price, 2);
+				} else {
+					$significant_digits = 4;
+					$precision = $significant_digits - floor(log10(abs($price))) - 1;
+					$formatted_price = number_format($price, $precision, '.', '');
+				}
+
+				$cl['coin_one'] = [
+					'price' => $formatted_price,
+					'high_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['HIGH24HOUR'], 2),
+					'low_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['LOW24HOUR'], 2),
+					'change_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['CHANGE24HOUR'], 2),
+					'change_pct_24h' => number_format((float)$data['RAW'][$coin_id]['USD']['CHANGEPCT24HOUR'], 2)
+				];
+			} else {
+				$cl['coin_one'] = [];
+			}
 		}
 	?>
 
@@ -202,7 +241,7 @@
 			<div data-el="timeline-bs-notifs" class="timeline-bs-notifs"></div>
 		</div>
 		<?php echo cl_template('common/bot_line'); ?>
-		<div class="lp" style="display: inline-flex; align-items:center; padding-top:10px;">
+		<div class="lp" style="display: inline-flex; align-items:center; padding-top:4px;">
 			<span class="go-back" onclick="SMColibri.go_back();" style="width:auto; height:auto; margin-top:0px; margin-right:10px;">
 				<?php echo cl_ikon('arrow-left'); ?>
 			</span>
@@ -468,14 +507,16 @@
 					</div>
 				</div>
 				<div style="display: flex; text-align:left; align-items:center; padding: 9px 0px">
-					<div style="width: 85%; display:flex;">
-						<div style="padding-left:10px; font-weight:bold; color: <?php echo (isset($cl['coin_one']['change_pct_24h']) && floatval($cl['coin_one']['change_pct_24h']) > 0) ? '#06806b' : '#dc3545'; ?>;"  class="with-tooltip" data-content="<?php echo cl_translate("The coin prices are approximate"); ?>">
-								<span style="padding-left: 14px; font-size:xx-large; color:var(--smc-main-text-color); font-weight:bold" id='price'>
-									<?php echo (isset($cl['coin_one']['price']) ? "$" . $cl['coin_one']['price'] : ''); ?>
-								</span>
-								<?php echo (isset($cl['coin_one']['change_pct_24h']) ? $cl['coin_one']['change_pct_24h'] : ''); ?>% (1d)
-							</div>
-					</div>
+					<?php if (isset($cl['coin_one']) && !empty($cl['coin_one'])) : ?>
+    					<div style="width: 85%; display:flex;">
+    						<div style="padding-left:10px; font-weight:bold; color: <?php echo (isset($cl['coin_one']['change_pct_24h']) && floatval($cl['coin_one']['change_pct_24h']) > 0) ? '#06806b' : '#dc3545'; ?>;"  class="with-tooltip" data-content="<?php echo cl_translate("The coin prices are approximate"); ?>">
+    								<span style="padding-left: 14px; font-size:xx-large; color:var(--smc-main-text-color); font-weight:bold" id='price'>
+    									<?php echo (isset($cl['coin_one']['price']) ? "$" . $cl['coin_one']['price'] : ''); ?>
+    								</span>
+    								<?php echo (isset($cl['coin_one']['change_pct_24h']) ? $cl['coin_one']['change_pct_24h'] : ''); ?>% (1d)
+    							</div>
+    					</div>
+					<?php endif; ?>
 					<div style="width: 15%; padding:10px 0px;">
 						<div class="profile-activity-stats-info" style="justify-content: end; margin-bottom: 0px; padding:0px 10px 0px 0px;">
 							<div class="stat-holder">
@@ -498,7 +539,6 @@
 					</div>
 				</div>
 					<!-- Start Add Post  -->
-					 <?php echo cl_js_template('apps/symbol/scripts/js/symbolpbox_mixin'); ?>
 				<div class="flex flex-col  w-full <?php if (empty($cl["is_logged"])): ?>hidden<?php endif; ?>">
 					<div class="homepage">
 						<div class="main-timeline-pubbox-wrapper custom-lineheight px-3 pt-3 py-2">
@@ -752,7 +792,8 @@
 				$('#loginModal').modal('show');
 				$('#loginModal .close').hide(true);
 				$("#loginModal .modal-content").css("z-index", "8000");
-				$('<div class="modal-lock" style="z-index: 7500; position: absolute; top: 0; left: 0; width: 100%; height: 500%; "></div>').appendTo('#loginModal');
+				$('<div class="modal-lock" style="z-index: 7500; position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0,0,0,0,5);"></div>').appendTo('#loginModal');
+				$("body").css({"backgroundColor": "rgba(0, 0, 0, 0.5)"});
 				lockScroll();
 				// Unlock scroll when modal is closed
 				$('#loginModal').on('hidden.bs.modal', function() {
@@ -960,8 +1001,8 @@
 		}
 
 		@media (max-width: 1024px) {
-			body main.main-content-container div.main-content-container-inner div.timeline-container-wrapper div.timeline-container_inner div.timeline-container {
-				padding-top: 83px !important;
+			body main.main-content-container div.main-content-container-inner div.timeline-container-wrapper div.timeline-container-inner div.timeline-container {
+				padding-top: 74px !important;
 			}
 		}
 	}
