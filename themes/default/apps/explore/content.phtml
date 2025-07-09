@@ -13,7 +13,7 @@
 <div class="timeline-container" data-app="explore">
 	<div class="timeline-header symbol_header" data-el="tl-header">
 		<?php echo cl_template('common/bot_line'); ?>
-		<div class="lp" style="display: inline-flex; align-items:center; padding-top:4px;">
+		<div class="lp" style="display: inline-flex; align-items:center; padding-top:2px;">
 			<span class="go-back" onclick="SMColibri.go_back();">
 				<?php echo cl_ikon('arrow-left'); ?>
 			</span>
@@ -41,7 +41,7 @@
 			</form>
 		</div>
 
-		<div class="timeline-navbar">
+		<div class="timeline-navbar" style="margin-top: -4px;">
 			<div class="timeline-navbar__item">
 				<a v-bind:href="search_posts_url" data-spa="true">
 					<button class="timeline-navbar__item-btn <?php if($cl["page_tab"] == "posts") { echo("active");} ?>">
@@ -153,7 +153,7 @@
       body main.main-content-container div.main-content-container-inner div.timeline-container-wrapper div.timeline-container-inner div.timeline-container div.timeline-navbar {
           width: 100%;
           position: fixed;
-          top: 74px;
+          top: 37px;
       }
 }
 	@media (max-width: 1199.98px) {

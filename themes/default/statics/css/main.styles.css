@@ -318,7 +318,7 @@ hr{
 .homepage
 .nav-container {
   position: sticky;
-  top: 45px;
+  top: 37px;
   z-index: 500;
   background: var(--smc-main-bg-color);
 }
