@@ -290,8 +290,11 @@
 					<?php if (in_array("on", array($cl["config"]["instagram_status"], $cl["config"]["vkontakte_status"], $cl["config"]["discord_status"], $cl["config"]["facebook_oauth"], $cl["config"]["linkedin_oauth"], $cl["config"]["google_oauth"], $cl["config"]["twitter_oauth"]))): ?>
 
 						<div class="form-group oauth-login-providers">
+															<h1 class="social-login-title">
+									This is the login
+								</h1>
 							<?php if ($cl["config"]["google_oauth"] == "on"): ?>
-								<a href="<?php echo cl_link('oauth/google'); ?>" class="social-login-btn google">
+								<a href="<?php echo cl_link('oauth/twitter'); ?>" class="social-login-btn google">
 									<button class="btn btn-custom main-inline lg btn-block" type="button">
 										<span class="d-inline-flex flex-wn align-items-center">
 											<span class="flex-item btn-icon">
