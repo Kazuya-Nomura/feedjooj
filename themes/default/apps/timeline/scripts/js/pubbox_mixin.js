@@ -13,6 +13,7 @@ var pubbox_form_app_mixin = Object({
 		return {
 			expect: "expection",
 			text: "",
+			autocomplete_processing: false, // Add this line
 			text_ph_orig: "<?php echo cl_translate('Hello {@name@}, What is new with you today?', array('name' => $cl['me']['name'])); ?>",
 			text_ph: "",
 			images: [],
@@ -531,13 +532,54 @@ var pubbox_form_app_mixin = Object({
 		mention_autocomplete: function(username = false) {
 			var _app_  = this;
 			var mt     = _app_.trigger_mentag_input("@");
+			
+			// Prevent multiple calls
+			if (_app_.autocomplete_processing) {
+				return;
+			}
+			
+			// Check if we have valid mentag input
+			if (!mt) {
+				return;
+			}
+			
+			_app_.autocomplete_processing = true;
+			
 			var s1     = _app_.text.substring(0, mt.startIND);
 			var s2     = _app_.text.substring(mt.endIND);
-	
+			
 			_app_.text = ((s1 || "") + "@{0} ".format(username) + (s2 || ""));
-	
+		
 			setTimeout(function() {
 				_app_.destroy_mentag_autocomplete();
+				_app_.autocomplete_processing = false;
+			}, 500);
+		},
+		
+		hashtag_autocomplete: function(hashtag = false) {
+			var _app_   = this;
+			var ht     = _app_.trigger_mentag_input("#");
+			
+			// Prevent multiple calls
+			if (_app_.autocomplete_processing) {
+				return;
+			}
+			
+			// Check if we have valid mentag input
+			if (!ht) {
+				return;
+			}
+			
+			_app_.autocomplete_processing = true;
+			
+			var s1     = _app_.text.substring(0, ht.startIND);
+			var s2     = _app_.text.substring(ht.endIND);
+			
+			_app_.text = ((s1 || "") + "#{0} ".format(hashtag) + (s2 || ""));
+
+			setTimeout(function() {
+				_app_.destroy_mentag_autocomplete();
+				_app_.autocomplete_processing = false;
 			}, 500);
 		},
 		hashtag_autocomplete: function(hashtag = false) {
@@ -546,6 +588,12 @@ var pubbox_form_app_mixin = Object({
 			var ht     = _app_.trigger_mentag_input("#");
 			var s1     = _app_.text.substring(0, ht.startIND);
 			var s2     = _app_.text.substring(ht.endIND);
+			// Prevent multiple calls
+			if (_app_.autocomplete_processing) {
+				return;
+			}
+			_app_.autocomplete_processing = true;
+			
 			_app_.text = ((s1 || "") + "#{0} ".format(hashtag) + (s2 || ""));
 	
 			setTimeout(function() {
@@ -555,15 +603,30 @@ var pubbox_form_app_mixin = Object({
 		page_autocomplete: function(page = false) {
 			var _app_  = this;
 			var pg     = _app_.trigger_mentag_input("$");
+			
+			// Prevent multiple calls
+			if (_app_.autocomplete_processing) {
+				return;
+			}
+			
+			// Check if we have valid mentag input
+			if (!pg) {
+				return;
+			}
+			
+			_app_.autocomplete_processing = true;
+			
 			var s1     = _app_.text.substring(0, pg.startIND);
 			var s2     = _app_.text.substring(pg.endIND);
-	
+			
 			_app_.text = ((s1 || "") + "${0} ".format(page) + (s2 || ""));
-	
+		
 			setTimeout(function() {
 				_app_.destroy_mentag_autocomplete();
+				_app_.autocomplete_processing = false;
 			}, 500);
 		},
+		
 		destroy_mentag_autocomplete: function() {
 			var _app_ = this;
 			_app_.mentions.users = [];
