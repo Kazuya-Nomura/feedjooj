@@ -35,7 +35,8 @@ else {
 		$device_type = "android";
 	}
 
-	if (empty($api_type) || in_array($api_type, array("facebook", "google", "twitter")) != true) {
+	$allowed_providers = array("facebook", "google", "twitter", "discord", "linkedin", "instagram", "vkontakte");
+	if (empty($api_type) || !in_array($api_type, $allowed_providers)) {
 		$data['code']    = 400;
         $data['message'] = "oAuth provider type is missing or invalid";
         $data['data']    = array();

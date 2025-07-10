@@ -134,6 +134,18 @@ else {
                     }
                     cl_redirect('/');
                 } 
+                
+                if($provider_name == 'twitter' && cl_uname_exists($user_profile->displayName)) {
+                    $db         = $db->where('username', $user_profile->displayName);
+                    $user_data = $db->getOne(T_USERS);
+                    if($user_data['active'] == '1'){
+                        cl_create_user_session($user_data['id'], 'web');
+                    }
+                    else{
+                        $cl['error'] = 'Account disabled or inactive';
+                    }
+                    cl_redirect('/');
+                }
 
                 else {
                 	$about            = isset($user_profile->description) ? $user_profile->description : "";
@@ -143,7 +155,7 @@ else {
     		        $user_ip          = ((filter_var($user_ip, FILTER_VALIDATE_IP) == true) ? $user_ip : '0.0.0.0');
     		        $user_id          = $db->insert(T_USERS, array(
     		            'fname'       => cl_text_secure($fname),
-    		            'username'    => $user_name,
+    		            'username'    => $provider_name == 'twitter' ? $user_profile->displayName : $user_name,
     		            'password'    => $password_hashed,
     		            'email'       => $user_email,
     		            'active'      => '1',
@@ -159,7 +171,6 @@ else {
                         'country_id'  => $cl['config']['country_id'],
                         'display_settings' => json(array("color_scheme" => $cl["config"]["default_color_scheme"], "background" => $cl["config"]["default_bg_color"]), true)
     		        ));
-
     		        if (is_posnum($user_id)) {
 
     		        	cl_create_user_session($user_id, 'web');
@@ -195,7 +206,11 @@ else {
                                 }
                             }
                         }
-
+                        
+                        if($provider_name == 'twitter') {
+                            cl_redirect('/');
+                        }
+                        
     		            cl_redirect('start_up');
     		        }
                 }
