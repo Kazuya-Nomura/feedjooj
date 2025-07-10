@@ -144,17 +144,26 @@
         .d-block#vue-notifications-app .notifications {
             height: 100% !important;;
         }
-
+        
         .d-block#vue-notifications-app .notifications .notifications-list {
             height: calc(100% - 60px) !important;
             overflow-y: auto;
             overflow-x: hidden;
         }
+        /* hide in Chrome/Safari/Opera */
+        .notifications-list[data-an="notifs-list"]::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+        #vue-notifications-app::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
     </style>
-	<div class="d-block" id="vue-notifications-app">
+	<div class="d-block" id="vue-notifications-app" style="scrollbar-width: none; -ms-overflow-style: none;">
 		<div class="notifications">
 			<?php if (not_empty($cl["notifs"])): ?>
-				<div data-an="notifs-list" class="notifications-list">
+				<div data-an="notifs-list" class="notifications-list" style="max-height: calc(100vh - 174px); overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
 					<?php foreach ($cl["notifs"] as $cl['li']): ?>
 						<?php echo cl_template('notifications/includes/list_item'); ?>
 					<?php endforeach; ?>
