@@ -1,3 +1,22 @@
+<style>
+	#cl-signup-vue-app .login-or-signup span::before {
+		content: "";
+		height: 1px;
+		background: rgb(207, 217, 222);
+		position: absolute;
+		width: 110px;
+		left: 21px;
+	}
+
+	#cl-signup-vue-app .login-or-signup span::after {
+		content: "";
+		height: 1px;
+		background: rgb(207, 217, 222);
+		position: absolute;
+		width: 110px;
+		margin-left: 51px;
+	}
+</style>
 <script src='https://www.google.com/recaptcha/api.js' async defer></script>
 <form class="form" id="cl-signup-vue-app" v-on:submit="submit_form($event)" autocomplete="off">
 	<div class="form-title">
