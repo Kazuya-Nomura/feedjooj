@@ -1,0 +1,63 @@
+
+<?php
+// build your map of all providers
+$social_logins = [
+    'google'    => ['status' => $cl["config"]["google_oauth"],    'href' => 'oauth/google',    'icon' => 'logos/google-logo-2',  'label' => 'SignIn with Google'],
+    'facebook'  => ['status' => $cl["config"]["facebook_oauth"],  'href' => 'oauth/facebook',  'icon' => 'logos/logo-facebook',  'label' => 'SignIn with Facebook'],
+    'twitter'   => ['status' => $cl["config"]["twitter_oauth"],   'href' => 'oauth/twitter',   'icon' => 'logos/logo-twitter',   'label' => 'SignIn with Twitter'],
+    'linkedin'  => ['status' => $cl["config"]["linkedin_oauth"],  'href' => 'oauth/linkedin',  'icon' => 'logos/logo-linkedin',  'label' => 'SignIn with LinkedIn'],
+    'discord'   => ['status' => $cl["config"]["discord_status"],  'href' => 'oauth/discord',   'icon' => 'logos/logo-discord',   'label' => 'SignIn with Discord'],
+    'vkontakte' => ['status' => $cl["config"]["vkontakte_status"],'href' => 'oauth/vkontakte', 'icon' => 'logos/logo-vk',        'label' => 'SignIn with Vkontakte'],
+    'instagram' => ['status' => $cl["config"]["instagram_status"],'href' => 'oauth/instagram', 'icon' => 'logos/logo-instagram', 'label' => 'SignIn with Instagram'],
+];
+
+// filter only the “on” ones
+$active_logins  = array_filter($social_logins, fn($s) => $s['status'] === 'on');
+$visible_logins = array_slice($active_logins, 0, 3);
+$hidden_logins  = array_slice($active_logins, 3);
+?>
+
+<!-- render the first 3 -->
+<?php foreach ($visible_logins as $name => $item): ?>
+    <a href="<?php echo cl_link($item['href']); ?>" class="social-login-btn <?php echo $name; ?>">
+        <button class="btn btn-custom main-inline lg btn-block" type="button">
+            <span class="d-inline-flex flex-wn align-items-center">
+                <span class="flex-item btn-icon">
+                    <?php echo cl_icon($item['icon']); ?>
+                </span>
+                <span class="flex-item">
+                    <?php echo cl_translate($item['label']); ?>
+                </span>
+            </span>
+        </button>
+    </a>
+<?php endforeach; ?>
+
+<!-- if more than 3, hide the rest -->
+<?php if (!empty($hidden_logins)): ?>
+    <div class="form-cta-link forgot">
+        <a data-toggle="collapse" data-target="#collapseLogin" aria-expanded="false" aria-controls="collapseLogin">
+            <span class="btn-outline">
+                <?php echo cl_icon('more_horiz'); ?>
+                <?php echo cl_translate("More Social Login"); ?>
+            </span>
+        </a>
+    </div>
+    <div class="collapse" id="collapseLogin">
+        <?php foreach ($hidden_logins as $name => $item): ?>
+            <a href="<?php echo cl_link($item['href']); ?>" class="social-login-btn <?php echo $name; ?>">
+                <button class="btn btn-custom main-inline lg btn-block" type="button">
+                    <span class="d-inline-flex flex-wn align-items-center">
+                        <span class="flex-item btn-icon">
+                            <?php echo cl_icon($item['icon']); ?>
+                        </span>
+                        <span class="flex-item">
+                            <?php echo cl_translate($item['label']); ?>
+                        </span>
+                    </span>
+                </button>
+            </a>
+        <?php endforeach; ?>
+    </div>
+
+<?php endif; ?>
