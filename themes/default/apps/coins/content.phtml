@@ -90,34 +90,65 @@
 	<?php if (empty($cl['is_logged'])): ?>
 	(function() {
 		let loginModalShown = false;
+		
 		function lockScroll() {
 			document.body.style.overflow = 'hidden';
 			document.body.style.position = 'fixed';
 			document.body.style.width = '100%';
+			document.body.style.top = `-${window.scrollY}px`; // Safari fix
 		}
+		
 		function unlockScroll() {
+			const scrollY = document.body.style.top;
 			document.body.style.overflow = '';
 			document.body.style.position = '';
 			document.body.style.width = '';
+			document.body.style.top = '';
+			window.scrollTo(0, parseInt(scrollY || '0') * -1); // Safari fix
 		}
-		window.addEventListener('scroll', function() {
-			if (!loginModalShown && window.scrollY > 2000) {
+		
+		function getScrollPosition() {
+			// Cross-browser scroll position
+			return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+		}
+		
+		function handleScroll() {
+			const scrollPos = getScrollPosition();
+			if (!loginModalShown && scrollPos > 2000) {
 				loginModalShown = true;
 				if (typeof $ !== 'undefined' && $('#loginModal').length) {
 					$('#loginModal').modal('show');
-					$('#loginModal .close').hide(true);
-					$("#loginModal .modal-content").css("z-index", "8000");
-					$('<div class="modal-lock" style="z-index: 7500; position: absolute; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0,0,0,0,5);"></div>').appendTo('#loginModal');
-					$("body").css({"backgroundColor": "rgba(0, 0, 0, 0.5)"});
+					$('#loginModal .close').hide();
+					$("#loginModal .modal-content").css({
+						"z-index": "9999", // Higher z-index for Safari
+						"position": "relative"
+					});
+					
+					// Safari-specific modal backdrop
+					$('<div class="modal-lock" style="z-index: 6000; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.5);"></div>').appendTo('body');
+					
 					lockScroll();
+					
 					// Unlock scroll when modal is closed
 					$('#loginModal').on('hidden.bs.modal', function() {
+						$('.modal-lock').remove();
 						unlockScroll();
 						loginModalShown = false;
 					});
 				}
 			}
-		});
+		}
+		
+		// Use both scroll and touchmove for Safari mobile
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		window.addEventListener('touchmove', handleScroll, { passive: true });
+		
+		// Fallback for Safari
+		setInterval(function() {
+			if (!loginModalShown) {
+				handleScroll();
+			}
+		}, 500);
 	})();
 	<?php endif; ?>
 </script>

@@ -83,7 +83,7 @@ body[data-bg="dark"] {
 
 body[data-bg="black"] {
   --cl-primary-bg-color: #000000;
-  --cl-secondary-bg-color: #111111;
+  --cl-secondary-bg-color: #131313;
   --cl-primary-border-color: #3c3c3c;
   --cl-secondary-border-color: #2f2f2f;
   --cl-primary-text-color: #ffffff;

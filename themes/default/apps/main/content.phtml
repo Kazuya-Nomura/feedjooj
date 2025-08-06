@@ -8,12 +8,69 @@
 			(
 			<?php echo fetch_or_get($me['new_notifs']); ?>)
 		<?php endif; ?>
-		<?php echo fetch_or_get($cl["page_title"], $cl["config"]["title"]); ?> / <?php echo fetch_or_get($cl["config"]["title"]); ?>
+		<?php 
+		// SEO optimization for symbol/coin pages
+
+		if ($cl["pn"] == "symbol" && not_empty($cl['prof_user'])) {
+			// First try to use the about description
+			if (not_empty($cl['prof_user']['about'])) {
+				// Trim to reasonable length for title and clean up
+				$seo_title = trim(strip_tags($cl['prof_user']['about']));
+				$seo_title = substr($seo_title, 0, 300);
+				// Remove any potential line breaks or extra spaces
+				$seo_title = preg_replace('/\s+/', ' ', $seo_title);
+				echo htmlspecialchars($seo_title);
+			}
+			// If no about description, use the latest post content
+			elseif (not_empty($cl['user_posts']) && not_empty($cl['user_posts'][0]) && not_empty($cl['user_posts'][0]['text'])) {
+				$seo_title = trim(strip_tags($cl['user_posts'][0]['text']));
+				$seo_title = substr($seo_title, 0, 300);
+				// Remove any potential line breaks or extra spaces
+				$seo_title = preg_replace('/\s+/', ' ', $seo_title);
+				echo htmlspecialchars($seo_title);
+			}
+			// Fallback to default title structure
+			else {
+				echo fetch_or_get($cl["page_title"], $cl["config"]["title"]) . " / " . fetch_or_get($cl["config"]["title"]);
+			}
+		} else {
+			// Default title for non-symbol pages
+			echo fetch_or_get($cl["page_title"], $cl["config"]["title"]) . " / " . fetch_or_get($cl["config"]["title"]);
+		}
+		?>
 	</title>
 
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta name="title" content="<?php echo fetch_or_get($cl["page_title"], $cl["config"]["title"]); ?>" />
-	<meta name="description" content="<?php echo fetch_or_get($cl["page_desc"], $cl["config"]["description"]); ?>" />
+	<?php 
+	// SEO meta tags optimization for symbol/coin pages
+	if ($cl["pn"] == "symbol" && not_empty($cl['prof_user'])) {
+		$meta_content = '';
+		// First try to use the about description
+		if (not_empty($cl['prof_user']['about'])) {
+			$meta_content = trim(strip_tags($cl['prof_user']['about']));
+			$meta_content = substr($meta_content, 0, 300);
+			$meta_content = preg_replace('/\s+/', ' ', $meta_content);
+		}
+		// If no about description, use the latest post content
+		elseif (not_empty($cl['user_posts']) && not_empty($cl['user_posts'][0]) && not_empty($cl['user_posts'][0]['text'])) {
+			$meta_content = trim(strip_tags($cl['user_posts'][0]['text']));
+			$meta_content = substr($meta_content, 0, 300);
+			$meta_content = preg_replace('/\s+/', ' ', $meta_content);
+		}
+		
+		if ($meta_content) {
+			echo '<meta name="title" content="' . htmlspecialchars($meta_content) . '" />';
+			echo '<meta name="description" content="' . htmlspecialchars($meta_content) . '" />';
+		} else {
+			echo '<meta name="title" content="' . fetch_or_get($cl["page_title"], $cl["config"]["title"]) . '" />';
+			echo '<meta name="description" content="' . fetch_or_get($cl["page_desc"], $cl["config"]["description"]) . '" />';
+		}
+	} else {
+		// Default meta tags for non-symbol pages
+		echo '<meta name="title" content="' . fetch_or_get($cl["page_title"], $cl["config"]["title"]) . '" />';
+		echo '<meta name="description" content="' . fetch_or_get($cl["page_desc"], $cl["config"]["description"]) . '" />';
+	}
+	?>
 	<meta name="keywords" content="<?php echo fetch_or_get($cl['page_kw'], $cl["config"]["keywords"]); ?>" />
 	<meta name="image" content="<?php echo fetch_or_get($cl['page_img'], $cl["config"]["site_logo"]); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -33,6 +90,41 @@
 		<meta name="twitter:description"
 			content="<?php echo fetch_or_get($cl["page_desc"], $cl["config"]["description"]); ?>" />
 		<meta name="twitter:image" content="<?php echo fetch_or_get($cl["page_image"], ''); ?>" />
+	<?php endif; ?>
+
+	<?php if ($cl["pn"] == 'symbol' && not_empty($cl['prof_user'])): ?>
+		<?php 
+		// SEO Open Graph and Twitter Card optimization for symbol/coin pages
+		$og_content = '';
+		// First try to use the about description
+		if (not_empty($cl['prof_user']['about'])) {
+			$og_content = trim(strip_tags($cl['prof_user']['about']));
+			$og_content = substr($og_content, 0, 300);
+			$og_content = preg_replace('/\s+/', ' ', $og_content);
+		}
+		// If no about description, use the latest post content
+		elseif (not_empty($cl['user_posts']) && not_empty($cl['user_posts'][0]) && not_empty($cl['user_posts'][0]['text'])) {
+			$og_content = trim(strip_tags($cl['user_posts'][0]['text']));
+			$og_content = substr($og_content, 0, 300);
+			$og_content = preg_replace('/\s+/', ' ', $og_content);
+		}
+		
+		if ($og_content) {
+			$og_content_escaped = htmlspecialchars($og_content);
+		} else {
+			$og_content_escaped = fetch_or_get($cl["page_desc"], $cl["config"]["description"]);
+		}
+		?>
+		<meta property="og:type" content="website" />
+		<meta property="og:image" content="<?php echo fetch_or_get($cl["page_image"], $cl["config"]["site_logo"]); ?>" />
+		<meta property="og:image:secure_url" content="<?php echo fetch_or_get($cl["page_image"], $cl["config"]["site_logo"]); ?>" />
+		<meta property="og:description" content="<?php echo $og_content_escaped; ?>" />
+		<meta property="og:title" content="<?php echo $og_content_escaped; ?>" />
+		<meta property="og:url" content="<?php echo fetch_or_get($cl["page_url"], $cl["config"]["url"]); ?>" />
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:title" content="<?php echo $og_content_escaped; ?>" />
+		<meta name="twitter:description" content="<?php echo $og_content_escaped; ?>" />
+		<meta name="twitter:image" content="<?php echo fetch_or_get($cl["page_image"], $cl["config"]["site_logo"]); ?>" />
 	<?php endif; ?>
 
 	<?php if (in_array($cl["pn"], array("profile", "connections"))): ?>

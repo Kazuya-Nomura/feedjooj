@@ -3,5 +3,5 @@ var infolinks_wsid = 0;
 
 var script = document.createElement('script');
 script.type = 'text/javascript';
-script.src = '//resources.infolinks.com/js/infolinks_main.js';
+script.src = 'https://resources.infolinks.com/js/infolinks_main.js';
 document.head.appendChild(script);

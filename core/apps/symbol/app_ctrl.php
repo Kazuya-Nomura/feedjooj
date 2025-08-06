@@ -128,6 +128,34 @@ function cl_get_symbol_posts($symbol_id = false, $limit = 30, $offset = false) {
             }
         }
     }
+
+    // Sort all posts by posting time (descending - newest first)
+    if (!empty($data)) {
+        usort($data, function($a, $b) {
+            // Handle ads (which don't have time field) - keep them in their original position
+            if (isset($a['ad_id']) || isset($b['ad_id'])) {
+                return 0;
+            }
+            
+            // Get timestamps for comparison - handle both string and integer formats
+            $time_a = 0;
+            $time_b = 0;
+            
+            if (isset($a['time'])) {
+                $time_a = is_numeric($a['time']) ? intval($a['time']) : strtotime($a['time']);
+                if ($time_a === false) $time_a = 0;
+            }
+            
+            if (isset($b['time'])) {
+                $time_b = is_numeric($b['time']) ? intval($b['time']) : strtotime($b['time']);
+                if ($time_b === false) $time_b = 0;
+            }
+            
+            // Sort in descending order (newest first)
+            return $time_b - $time_a;
+        });
+    }
+
     return $data;
 }
 
@@ -250,6 +278,34 @@ function cl_get_symbol_posts_trending($symbol_id = false, $limit = 30, $offset =
             }
         }
     }
+
+    // Sort all posts by posting time (descending - newest first)
+    if (!empty($data)) {
+        usort($data, function($a, $b) {
+            // Handle ads (which don't have time field) - keep them in their original position
+            if (isset($a['ad_id']) || isset($b['ad_id'])) {
+                return 0;
+            }
+            
+            // Get timestamps for comparison - handle both string and integer formats
+            $time_a = 0;
+            $time_b = 0;
+            
+            if (isset($a['time'])) {
+                $time_a = is_numeric($a['time']) ? intval($a['time']) : strtotime($a['time']);
+                if ($time_a === false) $time_a = 0;
+            }
+            
+            if (isset($b['time'])) {
+                $time_b = is_numeric($b['time']) ? intval($b['time']) : strtotime($b['time']);
+                if ($time_b === false) $time_b = 0;
+            }
+            
+            // Sort in descending order (newest first)
+            return $time_b - $time_a;
+        });
+    }
+
     return $data;
 }
 

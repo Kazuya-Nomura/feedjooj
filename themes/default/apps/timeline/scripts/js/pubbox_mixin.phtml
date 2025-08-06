@@ -1,0 +1,1638 @@
+var pubbox_form_app_mixin = Object({
+	data: function() {
+		return {
+			expect: "expection",
+			text: "",
+			autocomplete_processing: false,
+			input_timeout: null, 
+			text_ph_orig: "<?php echo cl_translate('Hello {@name@}, What is new with you today?', array('name' => $cl['me']['name'])); ?>",
+			text_ph: "",
+			images: [],
+			video: {},
+			audio: {},
+			music: {},
+			document: {},
+			poll: [],
+			gifs_r1: [],
+			gifs_r2: [],
+			image_ctrl: true,
+			video_ctrl: true,
+			audio_ctrl: true,
+			music_ctrl: true,
+			poll_ctrl: true,
+			doc_ctrl: true,
+			gif_ctrl: true,
+			submitting: false,
+			active_media: null,
+			gif_source: null,
+			post_privacy: "everyone",
+			og_imported: false,
+			og_data: {},
+			og_hidden: [],
+			audio_rec: {
+				context: false,
+				recorder: false,
+				is_recording: false,
+				record_time: 0,
+				record_ftime: "00:00",
+				record_timeint: false,
+				max_length: "<?php echo fetch_or_get($cl['config']['post_arec_length'], 30); ?>"
+			},
+			settings: {
+				max_length: "<?php echo fetch_or_get($cl['config']['max_post_len'], 600); ?>",
+				max_length_blue: "<?php echo fetch_or_get($cl['config']['max_post_len_blue'], 10000); ?>"
+			},
+			
+			sdds: {
+				privacy: {
+					everyone: "<?php echo cl_translate('Everyone can reply'); ?>",
+					mentioned: "<?php echo cl_translate('Only mentioned people'); ?>",
+					followers: "<?php echo cl_translate('Only my followers'); ?>",
+				}
+			},
+			data_temp: {
+				poll: {
+					title: "<?php echo cl_translate('Option - '); ?>",
+					value: ""
+				}
+			},
+			emoticons_picker: {
+				icons: window.cl_emoticons,
+				status: false,
+				active_group: "fused"
+			},
+			mentions: {
+				users: [],
+				pages: []
+			},
+			hashtags: {
+				tags: []
+			},
+		};
+	},
+	computed: {
+		valid_form: function() {
+			var _app_ = this;
+
+			if (_app_.active_media == 'image') {
+				if (_app_.images.length >= 1 && cl_empty(_app_.submitting)) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+
+			else if(_app_.active_media == 'gifs') {
+				if(cl_empty(_app_.gif_source) != true && cl_empty(_app_.submitting)) {
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+			else if(_app_.active_media == 'video') {
+				if($.isEmptyObject(_app_.video) != true && cl_empty(_app_.submitting)) {
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+			else if(_app_.active_media == 'audio') {
+				if($.isEmptyObject(_app_.audio) != true && cl_empty(_app_.submitting)) {
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+			else if(_app_.active_media == 'music') {
+				if($.isEmptyObject(_app_.music) != true && cl_empty(_app_.submitting)) {
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+			else if(_app_.active_media == 'doc') {
+				if($.isEmptyObject(_app_.document) != true && cl_empty(_app_.submitting)) {
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+			else if(_app_.active_media == 'poll') {
+				if(_app_.text.length > 0 && _app_.valid_poll && cl_empty(_app_.submitting)) {
+					return true;
+				}
+
+				else {
+					return false;
+				}
+			}
+
+			else if((_app_.active_media == null && _app_.text.length > 0) || _app_.og_imported) {
+				return true;
+			}
+
+			else {
+				return false;
+			}
+		},
+		preview_audio: function() {
+			if ($.isEmptyObject(this.audio)) {
+				return false;
+			}
+
+			return true;
+		},
+		preview_music: function() {
+			if ($.isEmptyObject(this.music)) {
+				return false;
+			}
+
+			return true;
+		},
+		preview_doc: function() {
+			if ($.isEmptyObject(this.document)) {
+				return false;
+			}
+
+			return true;
+		},
+		gifs: function() {
+			if (this.gifs_r1.length || this.gifs_r2.length) {
+				return true;
+			}
+
+			return false;
+		},
+		show_og_data: function() {
+			if (this.og_imported == true && this.active_media == null && this.og_hidden.contains(this.og_data.url) != true) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		},
+		valid_poll: function() {
+			var _app_ = this;
+
+			if (cl_empty(_app_.poll.length)) {
+				return false;
+			}
+
+			else {
+				for (var i = 0; i < _app_.poll.length; i++) {
+					if (cl_empty(_app_.poll[i].value)) {
+						return false;
+					}
+				}
+
+				return true;
+			}
+		}
+	},
+	methods: {
+		handlePaste: function(event = false) {
+			event.preventDefault();
+			event.stopPropagation();
+			const items = (event.clipboardData || window.clipboardData).items;
+			if (items.length > 0) {
+				if (items[0].kind === 'file') {
+					let files = [];
+					for (let i = 0; i < items.length; i++) {
+						const item = items[i];
+						if (item.kind === 'file') {
+							const file = item.getAsFile();
+							if (file) {
+								files.push(file);
+							} else {
+								cl_bs_notify('Failed to retrieve file from clipboard', 3000, "danger");
+							}
+						}
+					}
+					this.uploadFiles_drop(files);
+				} else {
+					// Check for HTML content first
+					const htmlItem = Array.from(items).find(item => item.type === 'text/html');
+					if (htmlItem) {
+						htmlItem.getAsString((html) => {
+							this.handleHtmlPaste(html);
+						});
+					} else {
+						// Handle as plain text
+						items[0].getAsString((text) => {
+							const start = this.$refs.text_input.selectionStart;
+							const end = start;
+							this.text = this.text.substring(0, start) + text + this.text.substring(end);
+						}, (error) => {
+							cl_bs_notify('Failed to get text from clipboard:', 3000, "danger");
+						});
+					}
+				}
+			}
+		},
+		handleHtmlPaste: function(html) {
+			// Extract image URLs from HTML content
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(html, 'text/html');
+			const images = doc.querySelectorAll('img');
+			
+			if (images.length > 0) {
+				// Found images in the HTML - try to load them
+				this.handlePastedImages(images);
+			} else {
+				// No images found, treat as text but clean up the HTML
+				const cleanText = doc.body ? doc.body.textContent || doc.body.innerText || '' : html;
+				if (cleanText.trim()) {
+					const start = this.$refs.text_input.selectionStart;
+					const end = start;
+					this.text = this.text.substring(0, start) + cleanText + this.text.substring(end);
+				}
+			}
+		},
+		handlePastedImages: function(images) {
+			const _app_ = this;
+			
+			// Check if we can add images (not already in different media mode)
+			if (!cl_empty(_app_.active_media) && _app_.active_media !== 'image') {
+				cl_bs_notify('Cannot add images while other media is attached', 3000, "warning");
+				return;
+			}
+			
+			// Process first image (limit to 1 for pasted images to avoid overwhelming)
+			const img = images[0];
+			const imgSrc = img.src;
+			
+			if (!imgSrc || imgSrc.startsWith('data:')) {
+				cl_bs_notify('Cannot process this type of image', 3000, "warning");
+				return;
+			}
+			
+			// Check if we're already at image limit
+			if (_app_.images.length >= 4) {
+				cl_bs_notify('You cannot attach more than 4 images to this post', 3000, "danger");
+				return;
+			}
+			
+			// Create a notification that we're processing the image
+			cl_bs_notify('Processing pasted image...', 2000, "info");
+			
+			// Convert the image URL to a blob and upload it
+			fetch(imgSrc)
+				.then(response => {
+					if (!response.ok) throw new Error('Failed to fetch image');
+					return response.blob();
+				})
+				.then(blob => {
+					// Create a file-like object from the blob
+					const file = new File([blob], 'pasted-image.jpg', { type: blob.type || 'image/jpeg' });
+					_app_.uploadFiles_drop([file]);
+				})
+				.catch(error => {
+					console.error('Error processing pasted image:', error);
+					cl_bs_notify('Failed to process pasted image. Try saving and uploading it manually.', 4000, "danger");
+					
+					// Fallback: insert the image URL as text
+					const start = _app_.$refs.text_input.selectionStart;
+					const end = start;
+					_app_.text = _app_.text.substring(0, start) + imgSrc + _app_.text.substring(end);
+				});
+		},
+		handleDrop: function(event = false) {
+			event.preventDefault();
+			event.stopPropagation();
+			const files = event.dataTransfer.files;
+			this.uploadFiles_drop(files);
+		},
+		uploadFiles_drop: function(files) {
+			let type = 0;
+			let valid = true;
+			for (let i = 0; i < files.length; i++) {
+				const file = files[i];
+				if (file.type.startsWith('image/')) {
+					if(type == 0) type = 1;
+					else if(type == 2) valid = false;
+				} else if (file.type.startsWith('video/')) {
+					if(type == 0) type = 2;
+					else if(type == 1) valid = false;
+				}
+				else valid = false;
+			}
+			if(!valid) cl_bs_notify("Files not valid. please select same types", 3000, "danger");
+			else{
+				if(type == 1) this.upload_images_drop(files);
+				else this.upload_video_drop(files[0]);
+			}
+		},
+		upload_images_drop: function(images = null) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media) || _app_.active_media == 'image') {
+
+				if (SMColibri.curr_pn == 'thread') {
+	        		$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+	        	}
+
+				SMColibri.progress_bar("show");
+
+				if (images.length) {
+					if(_app_.images.length + images.length < 5){
+						for (var i = 0; i < images.length; i++) {
+							if (SMColibri.max_upload(images[i].size)) {
+								var form_data  = new FormData();
+								var break_loop = false;
+								form_data.append('delay', 1);
+								form_data.append('image', images[i]);
+								form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+								
+								$.ajax({
+									url: '<?php echo cl_link("native_api/main/upload_post_image"); ?>',
+									type: 'POST',
+									dataType: 'json',
+									enctype: 'multipart/form-data',
+									data: form_data,
+									cache: false,
+									contentType: false,
+									processData: false,
+									timeout: 600000,
+									beforeSend: function() {
+										_app_.submitting = true;
+									},
+									success: function(data) {
+										if (data.status == 200) {
+											_app_.images.push(data.img);
+										}
+										else if(data.err_code == "total_limit_exceeded") {
+											cl_bs_notify("<?php echo cl_translate('You cannot attach more than 4 images to this post.'); ?>", 3000, "danger");
+											break_loop = true;
+										}
+										else {
+											SMColibri.errorMSG();
+										}
+									},
+									complete: function() {
+										if (_app_.images.length && cl_empty(_app_.active_media)) {
+											_app_.active_media = "image";
+										}
+
+										_app_.disable_ctrls();
+										_app_.submitting = false;
+									}
+								});
+
+								if (break_loop) {break;}
+							}
+						}
+					}
+					else {
+						cl_bs_notify("You can't upload over 4 images!", 3000, "danger");
+					}
+				}
+				setTimeout(function() {
+					SMColibri.progress_bar("end");
+
+					if (SMColibri.curr_pn == 'thread') {
+		        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+		        	}
+				}, 1500);
+
+				app_el.find('input[data-an="images-input"]').val('');
+			}
+		},
+		upload_video_drop: function(video = null) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				if (video && SMColibri.max_upload(video.size)) {
+					console.log("video upload");
+
+					var form_data = new FormData();
+					form_data.append('video', video);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_video"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.video = data.video;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 video to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								if (data.error) {
+									cl_bs_notify(data.error, 3000, "danger");
+								}
+								else{
+									SMColibri.errorMSG();
+								}
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.video) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "video";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="video-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		upload_audio_drop: function(audio = null) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				if (audio && SMColibri.max_upload(audio.size)) {
+					var form_data = new FormData();
+					form_data.append('audio', audio);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_audio"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.audio = data.audio;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 audio file to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								SMColibri.errorMSG();
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.audio) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "audio";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="audio-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		upload_music_drop: function(music = null) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				if (music && SMColibri.max_upload(music.size)) {
+					var form_data = new FormData();
+					form_data.append('audio', music);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_music"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.music = data.music;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 audio file to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								SMColibri.errorMSG();
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.music) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "music";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="music-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		upload_doc_drop: function(document = null) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				if (document && SMColibri.max_upload(document.size)) {
+					var form_data = new FormData();
+					form_data.append('document', document);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_document"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.document = data.document;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 document to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								SMColibri.errorMSG();
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.document) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "doc";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="doc-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		fetchOgData: function() {
+			var url_regex    = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+			var matched_urls = this.text.match(url_regex);
+			var _app_        = this;
+
+			if (matched_urls) {
+				if (this.og_imported != true || matched_urls.join('') != _app_.og_data.text) {
+					var form_data = new FormData();
+
+					form_data.append('urls', matched_urls.join(' '));
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/og_import"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+				        contentType: false,
+				        processData: false,
+				        beforeSend: function() {
+							_app_.og_imported = false;
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.og_data = data.data;
+								_app_.og_imported = true;
+							}
+						}
+					});
+				}
+			}
+
+			else {
+				_app_.og_imported = false;
+			}
+		},
+		rm_preview_og: function() {
+			this.og_hidden.push(this.og_data.url);
+		},
+		disable_ctrls: function() {
+			if (this.active_media) {
+				if (this.active_media == 'image') {
+					this.video_ctrl = false;
+					this.audio_ctrl = false;
+					this.music_ctrl = false;
+					this.poll_ctrl  = false;
+					this.doc_ctrl   = false;
+					this.gif_ctrl   = false;
+				}
+
+				else if (this.active_media == 'video') {
+					this.image_ctrl = false;
+					this.audio_ctrl = false;
+					this.music_ctrl = false;
+					this.poll_ctrl  = false;
+					this.doc_ctrl   = false;
+					this.gif_ctrl   = false;
+				}
+
+				else if (this.active_media == 'audio') {
+					this.video_ctrl = false;
+					this.image_ctrl = false;
+					this.music_ctrl = false;
+					this.poll_ctrl  = false;
+					this.doc_ctrl   = false;
+					this.gif_ctrl   = false;
+				}
+
+				else if (this.active_media == 'music') {
+					this.video_ctrl = false;
+					this.audio_ctrl = false;
+					this.image_ctrl = false;
+					this.poll_ctrl  = false;
+					this.doc_ctrl   = false;
+					this.gif_ctrl   = false;
+				}
+
+				else if (this.active_media == 'doc') {
+					this.video_ctrl = false;
+					this.audio_ctrl = false;
+					this.music_ctrl = false;
+					this.image_ctrl = false;
+					this.poll_ctrl  = false;
+					this.gif_ctrl   = false;
+				}
+
+				else if (this.active_media == 'poll') {
+					this.video_ctrl = false;
+					this.audio_ctrl = false;
+					this.music_ctrl = false;
+					this.image_ctrl = false;
+					this.doc_ctrl   = false;
+					this.gif_ctrl   = false;
+				}
+
+				else if (this.active_media == 'gifs') {
+					this.video_ctrl = false;
+					this.audio_ctrl = false;
+					this.music_ctrl = false;
+					this.image_ctrl = false;
+					this.doc_ctrl   = false;
+					this.poll_ctrl  = false;
+				}
+			}
+
+			else {
+				this.video_ctrl = true;
+				this.audio_ctrl = true;
+				this.music_ctrl = true;
+				this.image_ctrl = true;
+				this.doc_ctrl   = true;
+				this.poll_ctrl  = true;
+				this.gif_ctrl   = true;
+			}
+		},
+		on_new_image: function(event = false) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media) || _app_.active_media == 'image') {
+
+				if (SMColibri.curr_pn == 'thread') {
+	        		$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+	        	}
+
+				SMColibri.progress_bar("show");
+
+				var images = event.target.files;
+
+				if (images.length) {
+					if(_app_.images.length + images.length < 5){
+						for (var i = 0; i < images.length; i++) {
+							if (SMColibri.max_upload(images[i].size)) {
+								var form_data  = new FormData();
+								var break_loop = false;
+								form_data.append('delay', 1);
+								form_data.append('image', images[i]);
+								form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+								
+								$.ajax({
+									url: '<?php echo cl_link("native_api/main/upload_post_image"); ?>',
+									type: 'POST',
+									dataType: 'json',
+									enctype: 'multipart/form-data',
+									data: form_data,
+									cache: false,
+									contentType: false,
+									processData: false,
+									timeout: 600000,
+									beforeSend: function() {
+										_app_.submitting = true;
+									},
+									success: function(data) {
+										if (data.status == 200) {
+											_app_.images.push(data.img);
+										}
+										else if(data.err_code == "total_limit_exceeded") {
+											cl_bs_notify("<?php echo cl_translate('You cannot attach more than 4 images to this post.'); ?>", 3000, "danger");
+											break_loop = true;
+										}
+										else {
+											SMColibri.errorMSG();
+										}
+									},
+									complete: function() {
+										if (_app_.images.length && cl_empty(_app_.active_media)) {
+											_app_.active_media = "image";
+										}
+
+										_app_.disable_ctrls();
+										_app_.submitting = false;
+									}
+								});
+
+								if (break_loop) {break;}
+							}
+						}
+					}
+					else {
+						cl_bs_notify("You can't upload over 4 images!", 3000, "danger");
+					}
+				}
+				setTimeout(function() {
+					SMColibri.progress_bar("end");
+
+					if (SMColibri.curr_pn == 'thread') {
+		        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+		        	}
+				}, 1500);
+
+				app_el.find('input[data-an="images-input"]').val('');
+			}
+		},
+		on_new_video: function(event = false) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				var video = event.target.files[0];
+
+				if (video && SMColibri.max_upload(video.size)) {
+					console.log("video upload");
+
+					var form_data = new FormData();
+					form_data.append('video', video);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_video"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.video = data.video;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 video to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								if (data.error) {
+									cl_bs_notify(data.error, 3000, "danger");
+								}
+								else{
+									SMColibri.errorMSG();
+								}
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.video) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "video";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="video-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		on_new_audio: function(event = false) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				var audio = event.target.files[0];
+
+				if (audio && SMColibri.max_upload(audio.size)) {
+					var form_data = new FormData();
+					form_data.append('audio', audio);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_audio"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.audio = data.audio;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 audio file to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								SMColibri.errorMSG();
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.audio) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "audio";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="audio-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		on_new_music: function(event = false) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				var music = event.target.files[0];
+
+				if (music && SMColibri.max_upload(music.size)) {
+					var form_data = new FormData();
+					form_data.append('audio', music);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_music"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.music = data.music;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 audio file to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								SMColibri.errorMSG();
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.music) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "music";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="music-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		on_new_doc: function(event = false) {
+			var _app_  = this;
+			var app_el = $(_app_.$el);
+
+			if (cl_empty(_app_.active_media)) {
+
+				if (SMColibri.curr_pn == 'thread') {
+					$('div[data-app="modal-pubbox"]').addClass('vis-hidden');
+				}
+
+				SMColibri.progress_bar("show");
+
+				var document = event.target.files[0];
+
+				if (document && SMColibri.max_upload(document.size)) {
+					var form_data = new FormData();
+					form_data.append('document', document);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/upload_post_document"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+						async: false,
+				        contentType: false,
+				        processData: false,
+				        timeout: 600000,
+				        beforeSend: function() {
+							_app_.submitting = true;				        	
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.document = data.document;
+							}
+							else if(data.err_code == "total_limit_exceeded") {
+								cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 document to this post.'); ?>", 3000, "danger");
+							}
+							else {
+								SMColibri.errorMSG();
+							}
+						},
+						complete: function() {
+							if ($.isEmptyObject(_app_.document) != true && cl_empty(_app_.active_media)) {
+								_app_.active_media = "doc";
+							}
+
+							_app_.disable_ctrls();
+							_app_.submitting = false;
+							app_el.find('input[data-an="doc-input"]').val('');
+
+							setTimeout(function() {
+								SMColibri.progress_bar("end");
+
+								if (SMColibri.curr_pn == 'thread') {
+					        		$('div[data-app="modal-pubbox"]').removeClass('vis-hidden');
+					        	}
+							}, 1500);
+						}
+					});
+				}
+			}
+		},
+		get_gif_list: function(query = false) {
+			var form_data = new FormData();
+			var _app_     = this;
+
+			if (cl_empty(query)) {
+				query = "love";
+			}
+
+			form_data.append('query', query);
+			form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+			_app_.gifs_r1 = [];
+			_app_.gifs_r2 = [];
+
+			$.ajax({
+				url: '<?php echo cl_link("native_api/main/get_giphy_gifs"); ?>',
+				type: 'POST',
+				dataType: 'json',
+				enctype: 'multipart/form-data',
+				data: form_data,
+				cache: false,
+		        contentType: false,
+		        processData: false,
+		        success: function(data) {
+					if (data.status == 200) {
+						var gifs_list = data.gifs;
+
+						for (var i = 0; i < gifs_list.length; i++) {
+							if ((i % 2) == 0) {
+								_app_.gifs_r1.push(gifs_list[i]);
+							} 
+
+							else {
+								_app_.gifs_r2.push(gifs_list[i]);
+							}
+						}
+					}
+		        }
+			});
+		},
+		select_gif: function(gif_data = null) {
+			this.gif_source = gif_data;
+			this.active_media = "gifs";
+			this.disable_ctrls();
+		},
+		rm_gif: function() {
+			this.gif_source = null;
+			this.active_media = null;
+			this.disable_ctrls();
+		},
+		rm_image: function(index = null) {
+			this.images.splice(index, 1);
+
+			if (cl_empty(this.images.length)) {
+				this.active_media = null;
+			}
+
+			this.disable_ctrls();
+		},
+		rm_video: function() {
+			this.video = {};
+			this.active_media = null;
+			this.disable_ctrls();
+		},
+		rm_music: function() {
+			this.music = {};
+			this.active_media = null;
+			this.disable_ctrls();
+		},
+		rm_audio: function() {
+			this.audio = {};
+			this.active_media = null;
+			this.disable_ctrls();
+		},
+		rm_doc: function() {
+			this.document = {};
+			this.active_media = null;
+			this.disable_ctrls();
+		},
+		add_poll_option: function(text = '') {
+			var opt = {
+				title: this.data_temp.poll.title + (this.poll.length + 1),
+				value: text
+			};
+
+			this.poll.push(opt);
+		},
+		rm_poll_option: function(index = null) {
+			this.poll.splice(index, 1);
+
+			if (cl_empty(this.poll.length)) {
+				this.active_media = null;
+			}
+
+			else {
+				this.active_media = "poll";
+			}
+
+			this.disable_ctrls();
+		},
+		start_audio_rec: function(event = false) {
+			var _app_ = this;
+
+			if (cl_empty(_app_.active_media) && navigator.mediaDevices) {
+				if (cl_empty(_app_.audio_rec.is_recording)) {
+					navigator.mediaDevices.getUserMedia({
+						audio: true
+					}).then(function(stream) {
+						var rec = new MediaRecorder(stream);
+
+						rec.ondataavailable = function(e) {
+							var audio_file = new File([e.data], "voice_note.mp3", {
+								type: "audio/mp3",
+								lastModified: Date.now()
+							});
+
+							if (audio_file && SMColibri.max_upload(audio_file.size)) {
+								var form_data = new FormData();
+								form_data.append('audio', audio_file);
+								form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+								$.ajax({
+									url: '<?php echo cl_link("native_api/main/upload_post_audio"); ?>',
+									type: 'POST',
+									dataType: 'json',
+									enctype: 'multipart/form-data',
+									data: form_data,
+									cache: false,
+									async: false,
+							        contentType: false,
+							        processData: false,
+							        timeout: 600000,
+							        beforeSend: function() {
+										_app_.submitting = true;				        	
+							        },
+									success: function(data) {
+										if (data.status == 200) {
+											_app_.audio = data.audio;
+										}
+										else if(data.err_code == "total_limit_exceeded") {
+											cl_bs_notify("<?php echo cl_translate('You cannot attach more than 1 audio file to this post.'); ?>", 3000, "danger");
+										}
+										else {
+											SMColibri.errorMSG();
+										}
+									},
+									complete: function() {
+										if ($.isEmptyObject(_app_.audio) != true && cl_empty(_app_.active_media)) {
+											_app_.active_media = "audio";
+										}
+
+										_app_.disable_ctrls();
+										_app_.submitting = false;
+									}
+								});
+							}
+
+							stream.getAudioTracks().forEach(function(track) {
+								track.stop();
+							});
+						};
+
+						_app_.audio_rec.recorder = rec;
+						_app_.audio_rec.is_recording = true;
+						_app_.audio_rec.record_time = 0;
+						_app_.audio_rec.record_ftime = "00:00";
+						_app_.audio_rec.record_timeint = setInterval(function() {
+							_app_.audio_rec.record_time += 1;
+
+							var mm = Math.floor(_app_.audio_rec.record_time / 60);
+							var ss = _app_.audio_rec.record_time - (mm * 60);
+
+							if (mm < 10) {
+								mm = "0" + mm;
+							}
+
+							if (ss < 10) {
+								ss = "0" + ss;
+							}
+
+							_app_.audio_rec.record_ftime = mm + ":" + ss;
+
+							if (_app_.audio_rec.record_time >= parseInt(_app_.audio_rec.max_length)) {
+								_app_.finish_audio_rec();
+							}
+
+						}, 1000);
+
+						rec.start();
+
+					}).catch(function(error) {
+						console.log('Error accessing microphone:', error);
+						cl_bs_notify("<?php echo cl_translate('Error accessing your microphone. Please check your permissions.'); ?>", 5000, "danger");
+					});
+				} 
+
+				else {
+					_app_.finish_audio_rec();
+				}
+			}
+		},
+		finish_audio_rec: function() {
+			if (this.audio_rec.is_recording) {
+				this.audio_rec.recorder.stop();
+				this.audio_rec.is_recording = false;
+				clearInterval(this.audio_rec.record_timeint);
+			}
+		},
+		cancel_audio_rec: function() {
+			if (this.audio_rec.is_recording) {
+				this.audio_rec.is_recording = false;
+				this.audio_rec.record_time = 0;
+				this.audio_rec.record_ftime = "00:00";
+				clearInterval(this.audio_rec.record_timeint);
+			}
+		},
+		poll_toggle: function() {
+			if (cl_empty(this.active_media)) {
+				this.active_media = "poll";
+				this.add_poll_option();
+				this.add_poll_option();
+				this.disable_ctrls();
+			}
+
+			else if (this.active_media == "poll") {
+				this.poll = [];
+				this.active_media = null;
+				this.disable_ctrls();
+			}
+		},
+		text_focus_trigger: function() {
+			if (cl_empty(this.text)) {
+				this.text_ph = "";
+			}
+		},
+		text_blur_trigger: function() {
+			if (cl_empty(this.text)) {
+				this.text_ph = this.text_ph_orig;
+			}
+		},
+		text_input_trigger: function() {
+			if (this.og_imported != true && this.active_media == null) {
+				if (this.input_timeout) {
+					clearTimeout(this.input_timeout);
+				}
+
+				this.input_timeout = setTimeout(this.fetchOgData, 500);
+			}
+
+			var text_val = this.text;
+
+			this.mentions.users = [];
+			this.mentions.pages = [];
+			this.hashtags.tags = [];
+
+			var hashtag_match   = text_val.match(/#\w+$/);
+			var mention_match   = text_val.match(/@\w+$/);
+			var symbol_match    = text_val.match(/\$\w+$/);
+
+			if (hashtag_match) {
+				var hashtag_kw = hashtag_match[0].replace('#', '');
+				this.fetch_hashtags_ac(hashtag_kw);
+			}
+
+			else if (mention_match) {
+				var mention_kw = mention_match[0].replace('@', '');
+				this.fetch_mentions_ac(mention_kw);
+			}
+
+			else if (symbol_match) {
+				var symbol_kw = symbol_match[0].replace('$', '');
+				this.fetch_pages_ac(symbol_kw);
+			}
+		},
+		fetch_mentions_ac: function(kw = '') {
+			var form_data = new FormData();
+			var _app_     = this;
+
+			if (cl_empty(_app_.autocomplete_processing)) {
+				if (cl_empty(kw) != true && kw.length >= 2) {
+					form_data.append('keyword', kw);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					_app_.autocomplete_processing = true;
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/search_mentions_ac"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+				        contentType: false,
+				        processData: false,
+				        beforeSend: function() {
+							_app_.mentions.users = [];
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.mentions.users = data.users;
+							}
+						},
+						complete: function() {
+							_app_.autocomplete_processing = false;
+						}
+					});
+				}
+			}
+		},
+		fetch_pages_ac: function(kw = '') {
+			var form_data = new FormData();
+			var _app_     = this;
+
+			if (cl_empty(_app_.autocomplete_processing)) {
+				if (cl_empty(kw) != true && kw.length >= 2) {
+					form_data.append('keyword', kw);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					_app_.autocomplete_processing = true;
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/search_pages_ac"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+				        contentType: false,
+				        processData: false,
+				        beforeSend: function() {
+							_app_.mentions.pages = [];
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.mentions.pages = data.pages;
+							}
+						},
+						complete: function() {
+							_app_.autocomplete_processing = false;
+						}
+					});
+				}
+			}
+		},
+		fetch_hashtags_ac: function(kw = '') {
+			var form_data = new FormData();
+			var _app_     = this;
+
+			if (cl_empty(_app_.autocomplete_processing)) {
+				if (cl_empty(kw) != true && kw.length >= 2) {
+					form_data.append('keyword', kw);
+					form_data.append('hash', "<?php echo fetch_or_get($cl['csrf_token'],'none'); ?>");
+
+					_app_.autocomplete_processing = true;
+
+					$.ajax({
+						url: '<?php echo cl_link("native_api/main/search_hashtags_ac"); ?>',
+						type: 'POST',
+						dataType: 'json',
+						enctype: 'multipart/form-data',
+						data: form_data,
+						cache: false,
+				        contentType: false,
+				        processData: false,
+				        beforeSend: function() {
+							_app_.hashtags.tags = [];
+				        },
+						success: function(data) {
+							if (data.status == 200) {
+								_app_.hashtags.tags = data.tags;
+							}
+						},
+						complete: function() {
+							_app_.autocomplete_processing = false;
+						}
+					});
+				}
+			}
+		},
+		hashtag_autocomplete: function(tag_text = '') {
+			var text_val = this.text;
+			var hashtag_match = text_val.match(/#\w+$/);
+
+			if (hashtag_match) {
+				var new_text = text_val.replace(hashtag_match[0], '#' + tag_text);
+				this.text = new_text + ' ';
+			}
+
+			this.hashtags.tags = [];
+		},
+		mention_autocomplete: function(uname = '') {
+			var text_val = this.text;
+			var mention_match = text_val.match(/@\w+$/);
+
+			if (mention_match) {
+				var new_text = text_val.replace(mention_match[0], '@' + uname);
+				this.text = new_text + ' ';
+			}
+
+			this.mentions.users = [];
+		},
+		page_autocomplete: function(uname = '') {
+			var text_val = this.text;
+			var symbol_match = text_val.match(/\$\w+$/);
+
+			if (symbol_match) {
+				var new_text = text_val.replace(symbol_match[0], '$' + uname);
+				this.text = new_text + ' ';
+			}
+
+			this.mentions.pages = [];
+		},
+		emoticon_insert: function(icon = null) {
+			if (icon) {
+				this.text = this.text + icon;
+			}
+
+			this.emoticons_picker.status = false;
+		},
+		publish: function($event = null) {
+			var _app_     = this;
+			var form_data = new FormData(_app_.$el);
+
+			if (!_app_.submitting && _app_.valid_form) {
+				_app_.submitting = true;
+
+				$(_app_.$el).ajaxSubmit({
+					url: '<?php echo cl_link("native_api/main/publish_post"); ?>',
+					type: 'POST',
+					dataType: 'json',
+					beforeSend: function() {
+						SMColibri.progress_bar("show");
+					},
+					success: function(data) {
+
+						if (data.status == 200) {
+							_app_.text = "";
+							_app_.images = [];
+							_app_.video = {};
+							_app_.audio = {};
+							_app_.music = {};
+							_app_.document = {};
+							_app_.poll = [];
+							_app_.active_media = null;
+							_app_.gif_source = null;
+							_app_.og_imported = false;
+							_app_.og_data = {};
+							_app_.og_hidden = [];
+							_app_.disable_ctrls();
+
+							cl_bs_notify("<?php echo cl_translate('Post published successfully'); ?>", 3000, "success");
+
+							if (SMColibri.is_home) {
+								//SMColibri.reload();
+							}
+
+							if (SMColibri.curr_pn == 'thread') {
+								SMColibri.reload();
+							}
+
+							else if (SMColibri.curr_pn == 'profile') {
+								if (typeof SMColibri.app.reload_posts === 'function') {
+									SMColibri.app.reload_posts();
+								}
+							}
+
+							if ($('#add_new_post').hasClass('show')) {
+								$('#add_new_post').modal('hide');
+							}
+
+							if ($('#add_new_post_reply').hasClass('show')) {
+								$('#add_new_post_reply').modal('hide');
+							}
+
+							if (document.getElementsByClassName('pubbox-open-graph').length > 0) {
+								document.getElementsByClassName('pubbox-open-graph')[0].style.display = 'none';
+							}
+						}
+
+						else {
+							if (data.error) {
+								cl_bs_notify(data.error, 3000, "danger");
+							}
+
+							else {
+								SMColibri.errorMSG();
+							}
+						}
+					},
+					complete: function() {
+						_app_.submitting = false;
+						SMColibri.progress_bar("end");
+					}
+				});
+			}
+
+			$event.preventDefault();
+			return false;
+		}
+	}
+});

@@ -13,11 +13,12 @@ $social_logins = [
 
 // filter only the “on” ones
 $active_logins  = array_filter($social_logins, fn($s) => $s['status'] === 'on');
-$visible_logins = array_slice($active_logins, 0, 3);
-$hidden_logins  = array_slice($active_logins, 3);
+$visible_logins = !empty($active_logins) ? array_slice($active_logins, 0, 3) : [];
+$hidden_logins  = !empty($active_logins) ? array_slice($active_logins, 3) : [];
 ?>
 
 <!-- render the first 3 -->
+<?php if (isset($visible_logins)): ?>
 <?php foreach ($visible_logins as $name => $item): ?>
     <a href="<?php echo cl_link($item['href']); ?>" class="social-login-btn <?php echo $name; ?>">
         <button class="btn btn-custom main-inline lg btn-block" type="button">
@@ -32,6 +33,7 @@ $hidden_logins  = array_slice($active_logins, 3);
         </button>
     </a>
 <?php endforeach; ?>
+<?php endif; ?>
 
 <!-- if more than 3, hide the rest -->
 <?php if (!empty($hidden_logins)): ?>

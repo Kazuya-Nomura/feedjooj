@@ -209,9 +209,33 @@ if (not_empty($_GET['language'])) {
 }
 
 if (not_empty($cl["config"]["google_ad_horiz"])) {
-    $cl["gads_horiz"] = htmlspecialchars_decode($cl["config"]["google_ad_horiz"]);
+    $decoded = $cl["config"]["google_ad_horiz"];
+    
+    // Manual replacement of common entities
+    $decoded = str_replace('&#039;', "'", $decoded);
+    $decoded = str_replace('&quot;', '"', $decoded);
+    $decoded = str_replace('&lt;', '<', $decoded);
+    $decoded = str_replace('&gt;', '>', $decoded);
+    $decoded = str_replace('&amp;', '&', $decoded);
+    
+    // Then apply standard decoding
+    $decoded = html_entity_decode($decoded, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    
+    $cl["gads_horiz"] = $decoded;
 }
 
 if (not_empty($cl["config"]["google_ad_vert"])) {
-    $cl["gads_vert"] = htmlspecialchars_decode($cl["config"]["google_ad_vert"]);
+    $decoded = $cl["config"]["google_ad_vert"];
+    
+    // Manual replacement of common entities
+    $decoded = str_replace('&#039;', "'", $decoded);
+    $decoded = str_replace('&quot;', '"', $decoded);
+    $decoded = str_replace('&lt;', '<', $decoded);
+    $decoded = str_replace('&gt;', '>', $decoded);
+    $decoded = str_replace('&amp;', '&', $decoded);
+    
+    // Then apply standard decoding
+    $decoded = html_entity_decode($decoded, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    
+    $cl["gads_vert"] = $decoded;
 }

@@ -1,19 +1,10 @@
-/* @*************************************************************************@
-// @ Software author: JOOJ Team (JOOJ.us)							 @
-// @ Author_url 1: https://jooj.us                       @
-// @ Author_url 2: http://jooj.us/twitter-clone                      @
-// @ Author E-mail: sales@jooj.us                                    @
-// @*************************************************************************@
-// @ JOOJ Talk - The Ultimate Modern Social Media Sharing Platform           @
-// @ Copyright (c) 2020 - 2023 JOOJ Talk. All rights reserved.               @
-// @*************************************************************************@
-*/
 var pubbox_form_app_mixin = Object({
 	data: function() {
 		return {
 			expect: "expection",
 			text: "",
-			autocomplete_processing: false, // Add this line
+			autocomplete_processing: false,
+			input_timeout: null, 
 			text_ph_orig: "<?php echo cl_translate('Hello {@name@}, What is new with you today?', array('name' => $cl['me']['name'])); ?>",
 			text_ph: "",
 			images: [],
@@ -233,10 +224,11 @@ var pubbox_form_app_mixin = Object({
 							}
 						}
 					}
+					debugger;
 					this.uploadFiles_drop(files);
 				} else {
 					items[0].getAsString((text) => {
-						const start = this.$refs.text_input.selectionStart;;
+						const start = this.$refs.text_input.selectionStart;
 						const end = start;
 						this.text = this.text.substring(0, start) + text + this.text.substring(end);
 					}, (error) => {
@@ -254,6 +246,7 @@ var pubbox_form_app_mixin = Object({
 		uploadFiles_drop: function(files) {
 			let type = 0;
 			let valid = true;
+			debugger;
 			for (let i = 0; i < files.length; i++) {
 				const file = files[i];
 				if (file.type.startsWith('image/')) {
@@ -531,14 +524,13 @@ var pubbox_form_app_mixin = Object({
 		},
 		mention_autocomplete: function(username = false) {
 			var _app_  = this;
-			var mt     = _app_.trigger_mentag_input("@");
 			
-			// Prevent multiple calls
 			if (_app_.autocomplete_processing) {
 				return;
 			}
 			
-			// Check if we have valid mentag input
+			var mt     = _app_.trigger_mentag_input("@");
+			
 			if (!mt) {
 				return;
 			}
@@ -558,14 +550,13 @@ var pubbox_form_app_mixin = Object({
 		
 		hashtag_autocomplete: function(hashtag = false) {
 			var _app_   = this;
-			var ht     = _app_.trigger_mentag_input("#");
 			
-			// Prevent multiple calls
 			if (_app_.autocomplete_processing) {
 				return;
 			}
 			
-			// Check if we have valid mentag input
+			var ht     = _app_.trigger_mentag_input("#");
+			
 			if (!ht) {
 				return;
 			}
@@ -582,34 +573,15 @@ var pubbox_form_app_mixin = Object({
 				_app_.autocomplete_processing = false;
 			}, 500);
 		},
-		hashtag_autocomplete: function(hashtag = false) {
-			var _app_   = this;
-	
-			var ht     = _app_.trigger_mentag_input("#");
-			var s1     = _app_.text.substring(0, ht.startIND);
-			var s2     = _app_.text.substring(ht.endIND);
-			// Prevent multiple calls
-			if (_app_.autocomplete_processing) {
-				return;
-			}
-			_app_.autocomplete_processing = true;
-			
-			_app_.text = ((s1 || "") + "#{0} ".format(hashtag) + (s2 || ""));
-	
-			setTimeout(function() {
-				_app_.destroy_mentag_autocomplete();
-			}, 500);
-		},
 		page_autocomplete: function(page = false) {
 			var _app_  = this;
-			var pg     = _app_.trigger_mentag_input("$");
 			
-			// Prevent multiple calls
 			if (_app_.autocomplete_processing) {
 				return;
 			}
 			
-			// Check if we have valid mentag input
+			var pg     = _app_.trigger_mentag_input("$");
+			
 			if (!pg) {
 				return;
 			}
@@ -1773,6 +1745,7 @@ var pubbox_form_app_mixin = Object({
 							url: text_links[0]
 						}
 					}).done(function(data) {
+						debugger;
 						if (data.status == 200) {
 							_app_.og_imported = true;
 							_app_.og_data     = data.og_data;

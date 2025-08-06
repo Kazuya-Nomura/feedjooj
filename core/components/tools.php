@@ -790,7 +790,16 @@ function cl_import_image($data = array()) {
         $file_ext  = explode('.', $url);
         $file_ext  = end($file_ext);
         $file_ext  = (in_array($file_ext, array('png', 'jpg', 'jpeg', 'gif', 'webp'))) ? $file_ext : 'jpg';
-        $get_media = file_get_contents($url);
+        
+        // Use cURL instead of file_get_contents to avoid allow_url_fopen restrictions
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        $get_media = curl_exec($ch);
+        curl_close($ch);
+        
         $file_name = cl_gen_path(array(
             "folder" => $data["folder"],
             "file_type" => $data["file_type"],

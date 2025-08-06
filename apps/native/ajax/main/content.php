@@ -734,62 +734,72 @@ else if($action == 'import_og_data') {
         if(empty($_POST['url']) || is_url($_POST['url'])) {
             $post_data = $me['draft_post'];
             $og_url    = fetch_or_get($_POST['url'], "");
+            // Normalize YouTube URLs
+            if (preg_match('#^(https?://)?(www\.)?youtu\.be/([a-zA-Z0-9_-]+)#', $og_url, $match)) {
+                $og_url = "https://www.youtube.com/watch?v=" . $match[3];
+            }
+            elseif (preg_match('#^(https?://)?(www\.)?youtube\.com/embed/([a-zA-Z0-9_-]+)#', $og_url, $match)) {
+                $og_url = "https://www.youtube.com/watch?v=" . $match[3];
+            }
 
             try {
                 require_once(cl_full_path("core/libs/htmlParser/simple_html_dom.php"));
 
-                $og_data_object = file_get_html($og_url);
+                // $og_data_object = file_get_html($og_url);
+                $c = curl_init();
+                curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($c, CURLOPT_URL, $og_url);
+                $contents = curl_exec($c);
+                $header  = curl_getinfo( $c );
+                $data['header_size'] = strpos($contents, '</head>');
+                // $header_content = substr($contents, 0, $header['header_size']+15);
+                $header_content = substr($contents, 0, strpos($contents, '</head>'));
+                preg_match_all('/<meta\b[^>]*>/i', $contents, $metaMatches);
+                preg_match('/<title>(.*?)<\/title>/is', $contents, $mTitle);
+                $metaTags = $metaMatches[0];
+                // $data['og_data_object'] = $metaTags;
+                // $og_data_object = file_get_html($og_url);
+                // $og_data_object = json_decode($contents);
+                curl_close($c);
 
-                if ($og_data_object) {
-                    $og_data_values = array(
-                        "title" => "",
-                        "description" => "",
-                        "image" => "",
-                        "type" => ""
-                    );
-
-                    foreach(array_keys($og_data_values) as $og_val) {
-                        if ($og_val == "title") {
-                            if ($og_data_object->find('title', 0)) {
-                                $og_data_values["title"] = $og_data_object->find('title', 0)->plaintext;
-                            }
-
-                            else if ($og_data_object->find("meta[name='og:title']", 0)) {
-                                $og_data_values["title"] = $og_data_object->find("meta[name='og:title']", 0)->content;
-                            }
+                
+                $og_data_values = array(
+                    "title" => "",
+                    "description" => "",
+                    "image" => "",
+                    "type" => ""
+                );
+                    
+                if($mTitle) {
+                    $og_data_values["title"]= trim($mTitle[1]);
+                }
+                if ($metaMatches) {
+                    $data['data'] = [];
+                    foreach ($metaMatches[0] as $meta_tag) {
+                        array_push($data['data'], $meta_tag[0]);
+                        if (preg_match('/property="og:title"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["title"] = $matches[1];
                         }
-
-                        else if($og_val == "description") {
-                            if ($og_data_object->find("meta[name='description']", 0)) {
-                                $og_data_values["description"] = $og_data_object->find("meta[name='description']", 0)->content;
-                            }
-
-                            else if($og_data_object->find("meta[property='og:description']", 0)) {
-                                $og_data_values["description"] = $og_data_object->find("meta[property='og:description']", 0)->content;
-                            }
+                        elseif (preg_match('/name="description"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["description"] = $matches[1];
                         }
-
-                        else if($og_val == "image") {
-                            if($og_data_object->find("meta[name='image']", 0)) {
-                                $og_data_values["image"] = $og_data_object->find("meta[name='image']", 0)->content;
-                            }
-
-                            else if($og_data_object->find("meta[property='og:image']", 0)) {
-                                $og_data_values["image"] = $og_data_object->find("meta[property='og:image']", 0)->content;
-                            }
+                        elseif (preg_match('/property="og:description"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["description"] = $matches[1];
                         }
-
-                        else if($og_val == "type") {
-                            if($og_data_object->find("meta[property='og:type']", 0)) {
-                                $og_data_values["type"] = $og_data_object->find("meta[property='og:type']", 0)->content;
-                            }
-
-                            else if($og_data_object->find("meta[name='type']", 0)) {
-                                $og_data_values["type"] = $og_data_object->find("meta[name='type']", 0)->content;
-                            }
-                        } 
+                        elseif (preg_match('/name="image"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["image"] = $matches[1];
+                        }
+                        elseif (preg_match('/property="og:image"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["image"] = $matches[1];
+                        }
+                        elseif (preg_match('/name="type"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["type"] = $matches[1];
+                        }
+                        elseif (preg_match('/property="og:type"\s+content="([^"]+)"/i', $meta_tag[0], $matches)) {
+                            $og_data_values["type"] = $matches[1];
+                        }
                     }
-
+                    
                     $og_data_values = array(
                         'title'       => cl_croptxt($og_data_values["title"], 160, '..'),
                         'description' => cl_croptxt($og_data_values["description"], 300, '..'),
@@ -797,12 +807,54 @@ else if($action == 'import_og_data') {
                         'type'        => $og_data_values["type"],
                         'url'         => $og_url
                     );
-
+                    
                     if (not_empty($og_data_values['title'])) {
                         $data['status']  = 200;
                         $data['og_data'] = $og_data_values;
                     }
                 }
+                // if ($og_data_object) {
+                    // foreach(array_keys($metaMatches[1]) as $og_val) {
+                    //     if ($og_val == "title") {
+                    //         if ($og_data_object->find('title', 0)) {
+                    //             $og_data_values["title"] = $og_data_object->find('title', 0)->plaintext;
+                    //         }
+    
+                    //         else if ($og_data_object->find("meta[name='og:title']", 0)) {
+                    //             $og_data_values["title"] = $og_data_object->find("meta[name='og:title']", 0)->content;
+                    //         }
+                    //     }
+    
+                    //     else if($og_val == "description") {
+                    //         if ($og_data_object->find("meta[name='description']", 0)) {
+                    //             $og_data_values["description"] = $og_data_object->find("meta[name='description']", 0)->content;
+                    //         }
+    
+                    //         else if($og_data_object->find("meta[property='og:description']", 0)) {
+                    //             $og_data_values["description"] = $og_data_object->find("meta[property='og:description']", 0)->content;
+                    //         }
+                    //     }
+    
+                    //     else if($og_val == "image") {
+                    //         if($og_data_object->find("meta[name='image']", 0)) {
+                    //             $og_data_values["image"] = $og_data_object->find("meta[name='image']", 0)->content;
+                    //         }
+    
+                    //         else if($og_data_object->find("meta[property='og:image']", 0)) {
+                    //             $og_data_values["image"] = $og_data_object->find("meta[property='og:image']", 0)->content;
+                    //         }
+                    //     }
+    
+                    //     else if($og_val == "type") {
+                    //         if($og_data_object->find("meta[property='og:type']", 0)) {
+                    //             $og_data_values["type"] = $og_data_object->find("meta[property='og:type']", 0)->content;
+                    //         }
+    
+                    //         else if($og_data_object->find("meta[name='type']", 0)) {
+                    //             $og_data_values["type"] = $og_data_object->find("meta[name='type']", 0)->content;
+                    //         }
+                    //     } 
+                    // }
             } 
 
             catch (Exception $e) {
